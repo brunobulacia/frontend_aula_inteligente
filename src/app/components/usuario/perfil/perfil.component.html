@@ -1,0 +1,27 @@
+<div
+  *ngIf="perfil"
+  class="max-w-lg mx-auto bg-white rounded-xl shadow-md p-8 mt-8"
+>
+  <h2 class="text-2xl font-bold mb-6 text-center">Perfil de Usuario</h2>
+  <ul class="divide-y divide-gray-200">
+    <li class="py-3 flex justify-between">
+      <span class="font-medium">Nombre:</span>
+      <span>{{ perfil.nombre }}</span>
+    </li>
+    <li class="py-3 flex justify-between">
+      <span class="font-medium">Apellidos:</span>
+      <span>{{ perfil.apellidos }}</span>
+    </li>
+    <li class="py-3 flex justify-between">
+      <span class="font-medium">Email:</span>
+      <span>{{ perfil.email }}</span>
+    </li>
+    <li class="py-3 flex justify-between">
+      <span class="font-medium">Tipo de usuario:</span>
+      <span>{{ perfil.tipo_usuario }}</span>
+    </li>
+  </ul>
+  <fieldset class="border border-gray-300 rounded-lg p-4 mt-6">
+    <app-direccion></app-direccion>
+  </fieldset>
+</div>

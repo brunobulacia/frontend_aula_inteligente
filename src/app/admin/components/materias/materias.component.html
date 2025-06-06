@@ -1,0 +1,81 @@
+<h2 class="text-2xl font-bold mb-4 text-blue-700">Materias</h2>
+
+<!-- Botón para abrir el modal en modo crear -->
+<button
+  (click)="abrirModal()"
+  class="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+>
+  Crear Materia
+</button>
+
+<!-- Modal para crear/editar -->
+<div
+  *ngIf="mostrarModal"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+>
+  <div class="bg-white p-8 rounded shadow-lg w-full max-w-md relative">
+    <button
+      (click)="cerrarModal()"
+      class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
+      aria-label="Cerrar"
+    >
+      &times;
+    </button>
+    <h3 class="text-xl font-semibold mb-4 text-blue-700">
+      {{ materiaActual.id ? "Editar Materia" : "Crear Materia" }}
+    </h3>
+    <form
+      (ngSubmit)="onSubmitModal()"
+      #modalForm="ngForm"
+      class="flex flex-col gap-4"
+    >
+      <input
+        type="text"
+        name="nombre"
+        [(ngModel)]="materiaActual.nombre"
+        placeholder="Nombre"
+        required
+        class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <div class="flex gap-2 justify-end">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          {{ materiaActual.id ? "Actualizar" : "Crear" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lista de materias -->
+<ul class="space-y-2 max-w-md">
+  <li
+    *ngFor="let materia of materias"
+    class="flex items-center justify-between bg-gray-50 p-3 rounded shadow"
+  >
+    <span class="font-medium text-gray-800">{{ materia.nombre }}</span>
+    <div class="flex gap-2">
+      <button
+        (click)="editarMateria(materia)"
+        class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 transition"
+      >
+        Editar
+      </button>
+      <button
+        (click)="eliminarMateria(materia.id)"
+        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+      >
+        Eliminar
+      </button>
+    </div>
+  </li>
+</ul>

@@ -1,8 +1,13 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
-import { RestringidoComponent } from './auth/restringido/restringido.component';
-import { authGuard } from './guard/auth.guard';
+import { authGuard } from './guards/auth-guard/auth.guard';
+import { MateriasComponent } from './admin/components/materias/materias.component';
+import { InicioComponent } from './components/inicio/inicio.component';
+import { PerfilComponent } from './components/usuario/perfil/perfil.component';
+import { roleGuard } from './guards/role-guard/role.guard';
+import { UsuariosComponent } from './admin/components/usuarios/usuarios.component';
+import { AdminComponent } from './admin/components/admin/admin.component';
 
 export const routes: Routes = [
   {
@@ -10,12 +15,28 @@ export const routes: Routes = [
     component: LoginComponent,
   },
   {
-    path: 'registro',
-    component: RegistroComponent,
-  },
-  {
-    path: 'restringido',
+    path: 'inicio',
     canActivate: [authGuard],
-    component: RestringidoComponent,
+    component: InicioComponent,
+    children: [
+      { path: 'perfil', component: PerfilComponent },
+      { path: '', redirectTo: 'perfil', pathMatch: 'full' },
+    ],
+  },
+
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard],
+    component: AdminComponent,
+    children: [
+      {
+        path: 'materias',
+        component: MateriasComponent,
+      },
+      {
+        path: 'usuarios',
+        component: UsuariosComponent,
+      },
+    ],
   },
 ];

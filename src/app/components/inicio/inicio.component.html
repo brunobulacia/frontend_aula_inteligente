@@ -1,0 +1,13 @@
+<div class="flex min-h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <p-panelMenu
+    [model]="items"
+    class="w-64 min-h-screen rounded-none shadow-md bg-white"
+    styleClass="border-r border-gray-200"
+  ></p-panelMenu>
+
+  <!-- Main content -->
+  <div class="flex-1 p-8">
+    <router-outlet></router-outlet>
+  </div>
+</div>

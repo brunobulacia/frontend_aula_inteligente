@@ -58,8 +58,11 @@ export class LoginComponent {
           title: 'Éxito',
           text: 'Inicio de sesión exitoso.',
         });
+
+        console.log(response.user);
         this.authService.setToken(response.token);
-        this.router.navigate(['/']);
+        this.authService.setProfile(response.user);
+        this.router.navigate(['/inicio']);
       },
       error: (error) => {
         swal.fire({

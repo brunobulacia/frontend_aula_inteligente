@@ -1,0 +1,188 @@
+<div class="card">
+  <p-toast></p-toast>
+  <p-toolbar class="mb-6">
+    <ng-template pTemplate="start">
+      <p-button
+        label="Nuevo"
+        icon="pi pi-plus"
+        class="mr-2"
+        (onClick)="openNew()"
+      ></p-button>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="mb-4 flex gap-2">
+    <p-button
+      type="button"
+      icon="pi pi-chevron-left"
+      (click)="prev()"
+      [disabled]="isFirstPage()"
+      text
+    ></p-button>
+    <p-button
+      type="button"
+      icon="pi pi-refresh"
+      (click)="reset()"
+      text
+    ></p-button>
+    <p-button
+      type="button"
+      icon="pi pi-chevron-right"
+      (click)="next()"
+      [disabled]="isLastPage()"
+      text
+    ></p-button>
+  </div>
+
+  <p-table
+    [value]="usuarios"
+    [paginator]="true"
+    [rows]="rows"
+    [first]="first"
+    [showCurrentPageReport]="true"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} usuarios"
+    (onPage)="pageChange($event)"
+    [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [rowHover]="true"
+    dataKey="id"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="id" style="width: 10%">
+          ID <p-sortIcon field="id" />
+        </th>
+        <th pSortableColumn="nombre" style="width: 20%">
+          Nombre <p-sortIcon field="nombre" />
+        </th>
+        <th pSortableColumn="apellidos" style="width: 20%">
+          Apellidos <p-sortIcon field="apellidos" />
+        </th>
+        <th pSortableColumn="email" style="width: 25%">
+          Email <p-sortIcon field="email" />
+        </th>
+        <th pSortableColumn="tipo_usuario" style="width: 15%">
+          Tipo de Usuario <p-sortIcon field="tipo_usuario" />
+        </th>
+        <th style="width: 15%">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-usuario>
+      <tr>
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.apellidos }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>{{ usuario.tipo_usuario }}</td>
+        <td>
+          <button
+            type="button"
+            class="p-2 rounded hover:bg-blue-100 transition"
+            (click)="editUsuario(usuario)"
+            title="Editar"
+          >
+            <i-lucide [img]="EditIcon" class="w-5 h-5 text-blue-600"></i-lucide>
+          </button>
+          <button
+            type="button"
+            class="p-2 rounded hover:bg-red-100 transition"
+            (click)="deleteUsuario(usuario)"
+            title="Eliminar"
+          >
+            <i-lucide [img]="TrashIcon" class="w-5 h-5 text-red-600"></i-lucide>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Dialogo para crear/editar usuario -->
+  <p-dialog
+    [(visible)]="usuarioDialog"
+    [style]="{ width: '450px' }"
+    [modal]="true"
+    [closable]="false"
+    [dismissableMask]="true"
+    [baseZIndex]="10000"
+    [header]="isEdit ? 'Editar Usuario' : 'Nuevo Usuario'"
+  >
+    <ng-template pTemplate="content">
+      <form class="flex flex-col gap-6" (ngSubmit)="saveUsuario()">
+        <div>
+          <label for="nombre" class="block font-bold mb-2">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.nombre"
+            name="nombre"
+            required
+            autofocus
+          />
+          <small class="text-red-500" *ngIf="submitted && !usuarioActual.nombre"
+            >El nombre es requerido.</small
+          >
+        </div>
+        <div>
+          <label for="apellidos" class="block font-bold mb-2">Apellidos</label>
+          <input
+            id="apellidos"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.apellidos"
+            name="apellidos"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.apellidos"
+            >Los apellidos son requeridos.</small
+          >
+        </div>
+        <div>
+          <label for="email" class="block font-bold mb-2">Email</label>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            [(ngModel)]="usuarioActual.email"
+            name="email"
+            required
+          />
+          <small class="text-red-500" *ngIf="submitted && !usuarioActual.email"
+            >El email es requerido.</small
+          >
+        </div>
+        <div>
+          <label for="tipo_usuario" class="block font-bold mb-2"
+            >Tipo de Usuario</label
+          >
+          <input
+            id="tipo_usuario"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.tipo_usuario"
+            name="tipo_usuario"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.tipo_usuario"
+            >El tipo de usuario es requerido.</small
+          >
+        </div>
+      </form>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        text
+        (click)="hideDialog()"
+      />
+      <p-button label="Guardar" icon="pi pi-check" (click)="saveUsuario()" />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</div>
