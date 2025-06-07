@@ -157,19 +157,125 @@
           <label for="tipo_usuario" class="block font-bold mb-2"
             >Tipo de Usuario</label
           >
-          <input
+          <select
             id="tipo_usuario"
-            type="text"
             pInputText
             [(ngModel)]="usuarioActual.tipo_usuario"
             name="tipo_usuario"
             required
-          />
+            class="w-full p-inputtext"
+          >
+            <option value="" disabled selected>Seleccione un tipo</option>
+            <option value="alum">Alumno</option>
+            <option value="prof">Profesor</option>
+            <option value="admin">Administrador</option>
+          </select>
           <small
             class="text-red-500"
             *ngIf="submitted && !usuarioActual.tipo_usuario"
             >El tipo de usuario es requerido.</small
           >
+        </div>
+        <div>
+          <label for="ciudad" class="block font-bold mb-2">Ciudad</label>
+          <input
+            id="ciudad"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.ciudad"
+            name="email"
+            required
+          />
+          <small class="text-red-500" *ngIf="submitted && !usuarioActual.email"
+            >La ciudad es requerida.</small
+          >
+        </div>
+        <div>
+          <label for="ciudad" class="block font-bold mb-2">Ciudad</label>
+          <input
+            id="ciudad"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.ciudad"
+            name="ciudad"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.direccion.ciudad"
+          >
+            La ciudad es requerida.
+          </small>
+        </div>
+        <div>
+          <label for="zona" class="block font-bold mb-2">Zona</label>
+          <input
+            id="zona"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.zona"
+            name="zona"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.direccion.zona"
+          >
+            La zona es requerida.
+          </small>
+        </div>
+        <div>
+          <label for="calle" class="block font-bold mb-2">Calle</label>
+          <input
+            id="calle"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.calle"
+            name="calle"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.direccion.calle"
+          >
+            La calle es requerida.
+          </small>
+        </div>
+        <div>
+          <label for="numero" class="block font-bold mb-2">Número</label>
+          <input
+            id="numero"
+            type="number"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.numero"
+            name="numero"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && usuarioActual.direccion.numero === undefined"
+          >
+            El número es requerido.
+          </small>
+        </div>
+        <div>
+          <label for="referencia" class="block font-bold mb-2"
+            >Referencia</label
+          >
+          <input
+            id="referencia"
+            type="text"
+            pInputText
+            [(ngModel)]="usuarioActual.direccion.referencia"
+            name="referencia"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.direccion.referencia"
+          >
+            La referencia es requerida.
+          </small>
         </div>
       </form>
     </ng-template>

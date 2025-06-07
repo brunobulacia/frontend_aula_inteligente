@@ -1,5 +1,3 @@
-import { Direccion } from './direccion';
-
 export interface Usuario {
   id: number;
   nombre: string;
@@ -7,5 +5,12 @@ export interface Usuario {
   email: string;
   password: string;
   tipo_usuario: string;
-  direccion: Partial<Direccion>;
+  direccion: {
+    id: number;
+    ciudad: string;
+    zona: string;
+    calle: string;
+    numero: number;
+    referencia: string;
+  };
 }
