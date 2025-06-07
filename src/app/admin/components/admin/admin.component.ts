@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { PanelMenuModule } from 'primeng/panelmenu';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet, Router } from '@angular/router';
+import { icons } from 'lucide-angular';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -9,6 +11,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styles: ``,
 })
 export class AdminComponent {
+  constructor(private authService: AuthService, private router: Router) {}
   items = [
     {
       label: 'Inicio',
@@ -25,5 +28,16 @@ export class AdminComponent {
       icon: 'pi pi-users',
       routerLink: ['/admin/usuarios'],
     },
+    {
+      label: 'Cerrar sesión',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout(),
+      styleClass: 'text-red-600 font-semibold',
+    },
   ];
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
