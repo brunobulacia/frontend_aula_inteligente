@@ -12,6 +12,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { Toolbar } from 'primeng/toolbar';
 import { LucideAngularModule, Trash, Edit } from 'lucide-angular';
+import { Registro } from '../../../interfaces/registro';
+import { AuthService } from '../../../services/auth/auth.service';
 
 const USUARIO_VACIO: Usuario = {
   id: 0,
@@ -55,6 +57,20 @@ export class UsuariosComponent {
   readonly EditIcon = Edit;
   usuarios: Usuario[] = [];
   usuarioActual: Usuario = { ...USUARIO_VACIO };
+  registroActual: Registro = {
+    nombre: '',
+    apellidos: '',
+    email: '',
+    password: '',
+    tipo_usuario: '',
+    direccion: {
+      ciudad: '',
+      zona: '',
+      calle: '',
+      numero: 0,
+      referencia: '',
+    },
+  };
   usuarioDialog = false;
   submitted = false;
   first = 0;
@@ -64,7 +80,8 @@ export class UsuariosComponent {
   constructor(
     private usuarioService: UsuarioService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -116,7 +133,6 @@ export class UsuariosComponent {
   }
 
   editUsuario(usuario: Usuario) {
-    // Asegura que la dirección nunca sea null
     this.usuarioActual = {
       ...usuario,
       direccion: usuario.direccion
@@ -188,6 +204,7 @@ export class UsuariosComponent {
                 detail: 'Usuario actualizado correctamente',
                 life: 3000,
               });
+              window.location.reload();
               this.usuarioDialog = false;
               this.usuarioActual = {
                 ...USUARIO_VACIO,
@@ -204,13 +221,46 @@ export class UsuariosComponent {
             },
           });
       } else {
-        // Aquí deberías usar authService.registrar si corresponde
-        // ...
-        this.usuarioDialog = false;
-        this.usuarioActual = {
-          ...USUARIO_VACIO,
-          direccion: { ...USUARIO_VACIO.direccion },
+        this.registroActual = {
+          nombre: this.usuarioActual.nombre,
+          apellidos: this.usuarioActual.apellidos,
+          email: this.usuarioActual.email,
+          password: this.usuarioActual.password,
+          tipo_usuario: this.usuarioActual.tipo_usuario,
+          direccion: {
+            ciudad: this.usuarioActual.direccion.ciudad,
+            zona: this.usuarioActual.direccion.zona,
+            calle: this.usuarioActual.direccion.calle,
+            numero: this.usuarioActual.direccion.numero,
+            referencia: this.usuarioActual.direccion.referencia,
+          },
         };
+
+        console.log(this.registroActual);
+        this.authService.registrar(this.registroActual).subscribe({
+          next: (usuario) => {
+            this.usuarios.push(this.usuarioActual);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Registrado',
+              detail: 'Usuario registrado correctamente',
+              life: 3000,
+            });
+            this.usuarioDialog = false;
+            this.usuarioActual = {
+              ...USUARIO_VACIO,
+              direccion: { ...USUARIO_VACIO.direccion },
+            };
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo registrar el usuario',
+              life: 3000,
+            });
+          },
+        });
       }
     }
   }

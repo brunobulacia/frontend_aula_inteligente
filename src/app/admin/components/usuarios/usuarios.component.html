@@ -153,6 +153,24 @@
             >El email es requerido.</small
           >
         </div>
+        <!-- Solo mostrar el campo contraseña si es creación, no edición -->
+        <div *ngIf="!isEdit">
+          <label for="password" class="block font-bold mb-2">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            pInputText
+            [(ngModel)]="usuarioActual.password"
+            name="password"
+            required
+          />
+          <small
+            class="text-red-500"
+            *ngIf="submitted && !usuarioActual.password"
+          >
+            La contraseña es requerida.
+          </small>
+        </div>
         <div>
           <label for="tipo_usuario" class="block font-bold mb-2"
             >Tipo de Usuario</label
@@ -176,20 +194,7 @@
             >El tipo de usuario es requerido.</small
           >
         </div>
-        <div>
-          <label for="ciudad" class="block font-bold mb-2">Ciudad</label>
-          <input
-            id="ciudad"
-            type="text"
-            pInputText
-            [(ngModel)]="usuarioActual.direccion.ciudad"
-            name="email"
-            required
-          />
-          <small class="text-red-500" *ngIf="submitted && !usuarioActual.email"
-            >La ciudad es requerida.</small
-          >
-        </div>
+
         <div>
           <label for="ciudad" class="block font-bold mb-2">Ciudad</label>
           <input
