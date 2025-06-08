@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MateriasService } from '../../../services/materias/materias.service';
-import { Materias } from '../../../interfaces/materias';
+import { CursosService } from '../../../services/cursos/cursos.service';
+import { Cursos } from '../../../interfaces/cursos';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -27,13 +27,13 @@ import {
   BookOpen,
 } from 'lucide-angular';
 
-const MATERIA_VACIA: Materias = {
+const CURSO_VACIO: Cursos = {
   id: 0,
   nombre: '',
 };
 
 @Component({
-  selector: 'app-materias',
+  selector: 'app-cursos',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -50,10 +50,10 @@ const MATERIA_VACIA: Materias = {
     LucideAngularModule,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: './materias.component.html',
+  templateUrl: './cursos.component.html',
   standalone: true,
 })
-export class MateriasComponent {
+export class CursosComponent {
   readonly TrashIcon = Trash;
   readonly EditIcon = Edit;
   readonly PlusIcon = Plus;
@@ -65,10 +65,10 @@ export class MateriasComponent {
   readonly XIcon = X;
   readonly BookOpenIcon = BookOpen;
 
-  materias: Materias[] = [];
-  materiasFiltradas: Materias[] = [];
-  materiaActual: Materias = { ...MATERIA_VACIA };
-  materiaDialog = false;
+  cursos: Cursos[] = [];
+  cursosFiltrados: Cursos[] = [];
+  cursoActual: Cursos = { ...CURSO_VACIO };
+  cursoDialog = false;
   submitted = false;
   first = 0;
   rows = 10;
@@ -78,34 +78,34 @@ export class MateriasComponent {
   searchTerm = '';
 
   constructor(
-    private materiasService: MateriasService,
+    private cursosService: CursosService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.obtenerMaterias();
+    this.obtenerCursos();
   }
 
-  obtenerMaterias(): void {
-    this.materiasService.getMaterias().subscribe({
+  obtenerCursos(): void {
+    this.cursosService.getCursos().subscribe({
       next: (data) => {
-        this.materias = data;
+        this.cursos = data;
         this.aplicarFiltros();
       },
-      error: (err) => console.error('Error al obtener materias', err),
+      error: (err) => console.error('Error al obtener cursos', err),
     });
   }
 
   aplicarFiltros(): void {
-    let materiasFiltradas = [...this.materias];
+    let cursosFiltrados = [...this.cursos];
     if (this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
-      materiasFiltradas = materiasFiltradas.filter((materia) =>
-        materia.nombre.toLowerCase().includes(termino)
+      cursosFiltrados = cursosFiltrados.filter((curso) =>
+        curso.nombre.toLowerCase().includes(termino)
       );
     }
-    this.materiasFiltradas = materiasFiltradas;
+    this.cursosFiltrados = cursosFiltrados;
     this.first = 0;
   }
 
@@ -150,43 +150,43 @@ export class MateriasComponent {
   }
 
   isLastPage(): boolean {
-    return this.materiasFiltradas
-      ? this.first + this.rows >= this.materiasFiltradas.length
+    return this.cursosFiltrados
+      ? this.first + this.rows >= this.cursosFiltrados.length
       : true;
   }
 
   isFirstPage(): boolean {
-    return this.materiasFiltradas ? this.first === 0 : true;
+    return this.cursosFiltrados ? this.first === 0 : true;
   }
 
   openNew() {
-    this.materiaActual = { ...MATERIA_VACIA };
+    this.cursoActual = { ...CURSO_VACIO };
     this.submitted = false;
     this.isEdit = false;
-    this.materiaDialog = true;
+    this.cursoDialog = true;
   }
 
-  editMateria(materia: Materias) {
-    this.materiaActual = { ...materia };
+  editCurso(curso: Cursos) {
+    this.cursoActual = { ...curso };
     this.isEdit = true;
-    this.materiaDialog = true;
+    this.cursoDialog = true;
   }
 
-  deleteMateria(materia: Materias) {
+  deleteCurso(curso: Cursos) {
     this.confirmationService.confirm({
-      message: `¿Seguro que deseas eliminar la materia "${materia.nombre}"?`,
+      message: `¿Seguro que deseas eliminar el curso "${curso.nombre}"?`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.materiasService.deleteMateria(materia.id).subscribe({
+        this.cursosService.deleteCurso(curso.id).subscribe({
           next: () => {
-            this.materias = this.materias.filter((m) => m.id !== materia.id);
+            this.cursos = this.cursos.filter((m) => m.id !== curso.id);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Eliminado',
-              detail: 'Materia eliminada correctamente',
+              detail: 'Curso eliminado correctamente',
               life: 3000,
             });
           },
@@ -194,7 +194,7 @@ export class MateriasComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo eliminar la materia',
+              detail: 'No se pudo eliminar el curso',
               life: 3000,
             });
           },
@@ -204,58 +204,58 @@ export class MateriasComponent {
   }
 
   hideDialog() {
-    this.materiaDialog = false;
+    this.cursoDialog = false;
     this.submitted = false;
   }
 
-  saveMateria() {
+  saveCurso() {
     this.submitted = true;
-    if (this.materiaActual.nombre) {
-      if (this.isEdit && this.materiaActual.id) {
-        this.materiasService
-          .updateMateria(this.materiaActual.id, this.materiaActual)
+    if (this.cursoActual.nombre) {
+      if (this.isEdit && this.cursoActual.id) {
+        this.cursosService
+          .updateCurso(this.cursoActual.id, this.cursoActual)
           .subscribe({
-            next: (materia) => {
-              const idx = this.materias.findIndex((m) => m.id === materia.id);
-              if (idx > -1) this.materias[idx] = materia;
+            next: (curso) => {
+              const idx = this.cursos.findIndex((m) => m.id === curso.id);
+              if (idx > -1) this.cursos[idx] = curso;
               this.aplicarFiltros();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Actualizado',
-                detail: 'Materia actualizada correctamente',
+                detail: 'Curso actualizado correctamente',
                 life: 3000,
               });
-              this.materiaDialog = false;
-              this.materiaActual = { ...MATERIA_VACIA };
+              this.cursoDialog = false;
+              this.cursoActual = { ...CURSO_VACIO };
             },
             error: () => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'No se pudo actualizar la materia',
+                detail: 'No se pudo actualizar el curso',
                 life: 3000,
               });
             },
           });
       } else {
-        this.materiasService.createMateria(this.materiaActual).subscribe({
-          next: (materia) => {
-            this.materias.push(materia);
+        this.cursosService.createCurso(this.cursoActual).subscribe({
+          next: (curso) => {
+            this.cursos.push(curso);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Registrado',
-              detail: 'Materia creada correctamente',
+              detail: 'Curso creado correctamente',
               life: 3000,
             });
-            this.materiaDialog = false;
-            this.materiaActual = { ...MATERIA_VACIA };
+            this.cursoDialog = false;
+            this.cursoActual = { ...CURSO_VACIO };
           },
           error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo crear la materia',
+              detail: 'No se pudo crear el curso',
               life: 3000,
             });
           },

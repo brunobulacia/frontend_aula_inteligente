@@ -1,13 +1,225 @@
-<div class="flex min-h-screen bg-gray-50">
-  <!-- Sidebar -->
-  <p-panelMenu
-    [model]="items"
-    class="w-64 min-h-screen rounded-none shadow-md bg-white"
-    styleClass="border-r border-gray-200"
-  ></p-panelMenu>
+<div class="min-h-screen bg-slate-50">
+  <!-- Sidebar fijo -->
+  <aside
+    class="fixed top-0 left-0 flex flex-col w-80 min-w-[16rem] h-screen bg-slate-900 border-r border-slate-200 shadow-lg z-10"
+  >
+    <!-- User Profile -->
+    <div
+      class="flex items-center gap-3 px-6 py-4 my-8 bg-white/10 rounded-xl mx-4 mb-4 border border-white/20"
+    >
+      <p-avatar
+        [label]="getUserInitials()"
+        styleClass="bg-blue-500 text-white"
+        size="large"
+        shape="circle"
+      ></p-avatar>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-white font-semibold text-sm truncate">
+          {{ currentUser?.nombre || "Administrador" }}
+          {{ currentUser?.apellidos || "Sistema" }}
+        </h3>
+        <p class="text-blue-200 text-xs">{{ getUserRole() }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          <span class="text-green-200 text-xs">En línea</span>
+        </div>
+      </div>
+    </div>
 
-  <!-- Main content -->
-  <div class="flex-1 p-8">
-    <router-outlet></router-outlet>
+    <!-- Navegación estática -->
+    <nav
+      class="flex-1 px-2 space-y-2 overflow-y-auto max-h-[calc(100vh-320px)] pr-2 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full hover:scrollbar-thumb-blue-500"
+    >
+      <!-- Gestión Académica -->
+      <div>
+        <button
+          type="button"
+          (click)="openAcademica = !openAcademica"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+        >
+          <i-lucide [img]="BookIcon" class="w-5 h-5 text-blue-300"></i-lucide>
+          <span>Gestión Académica</span>
+          <svg
+            [ngClass]="{ 'rotate-90': openAcademica }"
+            class="w-4 h-4 ml-auto transition-transform"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <div *ngIf="openAcademica" class="pl-8 space-y-1">
+          <a
+            routerLink="/admin/materias"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="BookIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Materias</span>
+          </a>
+          <a
+            routerLink="/admin/cursos"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="GraduationCapIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Cursos</span>
+          </a>
+          <a
+            routerLink="/admin/gestiones"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="FileTextIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Gestiones</span>
+          </a>
+          <a
+            routerLink="/admin/gestiones-cursos"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="SchoolIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Gestion-Cursos</span>
+          </a>
+          <a
+            routerLink="/admin/asignaciones"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="UserRoundCheckIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Asignaciones</span>
+          </a>
+        </div>
+      </div>
+      <!-- Usuarios -->
+      <div>
+        <button
+          type="button"
+          (click)="openUsuarios = !openUsuarios"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+        >
+          <i-lucide [img]="UsersIcon" class="w-5 h-5 text-blue-300"></i-lucide>
+          <span>Usuarios</span>
+          <svg
+            [ngClass]="{ 'rotate-90': openUsuarios }"
+            class="w-4 h-4 ml-auto transition-transform"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <div *ngIf="openUsuarios" class="pl-8 space-y-1">
+          <a
+            routerLink="/admin/usuarios"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="UsersIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Usuarios</span>
+          </a>
+        </div>
+      </div>
+      <!-- Horarios -->
+      <div>
+        <button
+          type="button"
+          (click)="openHorarios = !openHorarios"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+        >
+          <i-lucide
+            [img]="CalendarCheck2Icon"
+            class="w-5 h-5 text-blue-300"
+          ></i-lucide>
+          <span>Horarios</span>
+          <svg
+            [ngClass]="{ 'rotate-90': openHorarios }"
+            class="w-4 h-4 ml-auto transition-transform"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <div *ngIf="openHorarios" class="pl-8 space-y-1">
+          <a
+            routerLink="/admin/horarios"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="CalendarCheck2Icon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Horarios</span>
+          </a>
+          <a
+            routerLink="/admin/horarios-dias"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="CalendarClockIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Horarios-Dias</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Logout -->
+    <div class="mt-auto px-4 py-6">
+      <button
+        (click)="logout()"
+        class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-red-500 bg-red-50 hover:bg-red-100 font-semibold transition"
+      >
+        <i-lucide [img]="LogOutIcon" class="w-5 h-5"></i-lucide>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content con padding izquierdo para no tapar el sidebar -->
+  <div class="ml-80 flex flex-col min-h-screen">
+    <main class="flex-1 overflow-y-auto p-8 bg-slate-300">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 </div>

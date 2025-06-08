@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MateriasService } from '../../../services/materias/materias.service';
-import { Materias } from '../../../interfaces/materias';
+import { HorariosService } from '../../../services/horarios/horarios.service';
+import { Horarios } from '../../../interfaces/horarios';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -24,16 +24,17 @@ import {
   Search,
   Filter,
   X,
-  BookOpen,
+  Clock,
 } from 'lucide-angular';
 
-const MATERIA_VACIA: Materias = {
+const HORARIO_VACIO: Horarios = {
   id: 0,
-  nombre: '',
+  hora_inicio: '',
+  hora_fin: '',
 };
 
 @Component({
-  selector: 'app-materias',
+  selector: 'app-horarios',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -50,10 +51,10 @@ const MATERIA_VACIA: Materias = {
     LucideAngularModule,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: './materias.component.html',
+  templateUrl: './horarios.component.html',
   standalone: true,
 })
-export class MateriasComponent {
+export class HorariosComponent {
   readonly TrashIcon = Trash;
   readonly EditIcon = Edit;
   readonly PlusIcon = Plus;
@@ -63,12 +64,12 @@ export class MateriasComponent {
   readonly SearchIcon = Search;
   readonly FilterIcon = Filter;
   readonly XIcon = X;
-  readonly BookOpenIcon = BookOpen;
+  readonly ClockIcon = Clock;
 
-  materias: Materias[] = [];
-  materiasFiltradas: Materias[] = [];
-  materiaActual: Materias = { ...MATERIA_VACIA };
-  materiaDialog = false;
+  horarios: Horarios[] = [];
+  horariosFiltrados: Horarios[] = [];
+  horarioActual: Horarios = { ...HORARIO_VACIO };
+  horarioDialog = false;
   submitted = false;
   first = 0;
   rows = 10;
@@ -78,34 +79,36 @@ export class MateriasComponent {
   searchTerm = '';
 
   constructor(
-    private materiasService: MateriasService,
+    private horariosService: HorariosService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.obtenerMaterias();
+    this.obtenerHorarios();
   }
 
-  obtenerMaterias(): void {
-    this.materiasService.getMaterias().subscribe({
+  obtenerHorarios(): void {
+    this.horariosService.getHorarios().subscribe({
       next: (data) => {
-        this.materias = data;
+        this.horarios = data;
         this.aplicarFiltros();
       },
-      error: (err) => console.error('Error al obtener materias', err),
+      error: (err) => console.error('Error al obtener horarios', err),
     });
   }
 
   aplicarFiltros(): void {
-    let materiasFiltradas = [...this.materias];
+    let horariosFiltrados = [...this.horarios];
     if (this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
-      materiasFiltradas = materiasFiltradas.filter((materia) =>
-        materia.nombre.toLowerCase().includes(termino)
+      horariosFiltrados = horariosFiltrados.filter(
+        (horario) =>
+          horario.hora_inicio.toLowerCase().includes(termino) ||
+          horario.hora_fin.toLowerCase().includes(termino)
       );
     }
-    this.materiasFiltradas = materiasFiltradas;
+    this.horariosFiltrados = horariosFiltrados;
     this.first = 0;
   }
 
@@ -150,43 +153,43 @@ export class MateriasComponent {
   }
 
   isLastPage(): boolean {
-    return this.materiasFiltradas
-      ? this.first + this.rows >= this.materiasFiltradas.length
+    return this.horariosFiltrados
+      ? this.first + this.rows >= this.horariosFiltrados.length
       : true;
   }
 
   isFirstPage(): boolean {
-    return this.materiasFiltradas ? this.first === 0 : true;
+    return this.horariosFiltrados ? this.first === 0 : true;
   }
 
   openNew() {
-    this.materiaActual = { ...MATERIA_VACIA };
+    this.horarioActual = { ...HORARIO_VACIO };
     this.submitted = false;
     this.isEdit = false;
-    this.materiaDialog = true;
+    this.horarioDialog = true;
   }
 
-  editMateria(materia: Materias) {
-    this.materiaActual = { ...materia };
+  editHorario(horario: Horarios) {
+    this.horarioActual = { ...horario };
     this.isEdit = true;
-    this.materiaDialog = true;
+    this.horarioDialog = true;
   }
 
-  deleteMateria(materia: Materias) {
+  deleteHorario(horario: Horarios) {
     this.confirmationService.confirm({
-      message: `¿Seguro que deseas eliminar la materia "${materia.nombre}"?`,
+      message: `¿Seguro que deseas eliminar el horario ${horario.hora_inicio} - ${horario.hora_fin}?`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.materiasService.deleteMateria(materia.id).subscribe({
+        this.horariosService.deleteHorario(horario.id).subscribe({
           next: () => {
-            this.materias = this.materias.filter((m) => m.id !== materia.id);
+            this.horarios = this.horarios.filter((h) => h.id !== horario.id);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Eliminado',
-              detail: 'Materia eliminada correctamente',
+              detail: 'Horario eliminado correctamente',
               life: 3000,
             });
           },
@@ -194,7 +197,7 @@ export class MateriasComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo eliminar la materia',
+              detail: 'No se pudo eliminar el horario',
               life: 3000,
             });
           },
@@ -204,58 +207,58 @@ export class MateriasComponent {
   }
 
   hideDialog() {
-    this.materiaDialog = false;
+    this.horarioDialog = false;
     this.submitted = false;
   }
 
-  saveMateria() {
+  saveHorario() {
     this.submitted = true;
-    if (this.materiaActual.nombre) {
-      if (this.isEdit && this.materiaActual.id) {
-        this.materiasService
-          .updateMateria(this.materiaActual.id, this.materiaActual)
+    if (this.horarioActual.hora_inicio && this.horarioActual.hora_fin) {
+      if (this.isEdit && this.horarioActual.id) {
+        this.horariosService
+          .updateHorario(this.horarioActual.id, this.horarioActual)
           .subscribe({
-            next: (materia) => {
-              const idx = this.materias.findIndex((m) => m.id === materia.id);
-              if (idx > -1) this.materias[idx] = materia;
+            next: (horario) => {
+              const idx = this.horarios.findIndex((h) => h.id === horario.id);
+              if (idx > -1) this.horarios[idx] = horario;
               this.aplicarFiltros();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Actualizado',
-                detail: 'Materia actualizada correctamente',
+                detail: 'Horario actualizado correctamente',
                 life: 3000,
               });
-              this.materiaDialog = false;
-              this.materiaActual = { ...MATERIA_VACIA };
+              this.horarioDialog = false;
+              this.horarioActual = { ...HORARIO_VACIO };
             },
             error: () => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'No se pudo actualizar la materia',
+                detail: 'No se pudo actualizar el horario',
                 life: 3000,
               });
             },
           });
       } else {
-        this.materiasService.createMateria(this.materiaActual).subscribe({
-          next: (materia) => {
-            this.materias.push(materia);
+        this.horariosService.createHorario(this.horarioActual).subscribe({
+          next: (horario) => {
+            this.horarios.push(horario);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Registrado',
-              detail: 'Materia creada correctamente',
+              detail: 'Horario creado correctamente',
               life: 3000,
             });
-            this.materiaDialog = false;
-            this.materiaActual = { ...MATERIA_VACIA };
+            this.horarioDialog = false;
+            this.horarioActual = { ...HORARIO_VACIO };
           },
           error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo crear la materia',
+              detail: 'No se pudo crear el horario',
               life: 3000,
             });
           },

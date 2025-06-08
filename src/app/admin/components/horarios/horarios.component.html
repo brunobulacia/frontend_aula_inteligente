@@ -5,23 +5,23 @@
   <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
     <div class="flex items-center gap-4">
       <div class="bg-white/20 p-3 rounded-full">
-        <i-lucide [img]="BookOpenIcon" class="w-8 h-8"></i-lucide>
+        <i-lucide [img]="ClockIcon" class="w-8 h-8"></i-lucide>
       </div>
       <div>
-        <h1 class="text-3xl font-bold mb-2">Gestión de Materias</h1>
+        <h1 class="text-3xl font-bold mb-2">Gestión de Horarios</h1>
         <p class="text-white/80">
-          Administra las materias del sistema de manera eficiente
+          Administra los horarios del sistema de manera eficiente
         </p>
       </div>
     </div>
     <div class="mt-6 flex items-center gap-6 text-white/90">
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materias.length }}</span>
-        <span>Materias totales</span>
+        <span class="text-2xl font-bold">{{ horarios.length }}</span>
+        <span>Horarios totales</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materiasFiltradas.length }}</span>
-        <span>Materias mostradas</span>
+        <span class="text-2xl font-bold">{{ horariosFiltrados.length }}</span>
+        <span>Horarios mostrados</span>
       </div>
     </div>
   </div>
@@ -48,7 +48,7 @@
           for="search"
           class="block text-sm font-medium text-slate-200 mb-2"
         >
-          Buscar por nombre de materia
+          Buscar por hora inicio o fin
         </label>
         <div class="relative">
           <input
@@ -57,7 +57,7 @@
             pInputText
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
-            placeholder="Buscar materias..."
+            placeholder="Buscar horarios..."
             class="w-full pl-10"
           />
         </div>
@@ -97,7 +97,7 @@
     <p-toolbar class="mb-6 border-0 bg-white shadow-sm rounded-lg">
       <ng-template pTemplate="start">
         <p-button
-          label="Nueva Materia"
+          label="Nuevo Horario"
           severity="success"
           class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
           (onClick)="openNew()"
@@ -146,13 +146,13 @@
 
     <!-- Enhanced Table -->
     <p-table
-      [value]="materiasFiltradas"
+      [value]="horariosFiltrados"
       [paginator]="true"
       [rows]="rows"
       [first]="first"
       [showCurrentPageReport]="true"
       [tableStyle]="{ 'min-width': '30rem' }"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} materias"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} horarios"
       (onPage)="pageChange($event)"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [rowHover]="true"
@@ -166,28 +166,39 @@
               ID <p-sortIcon field="id" />
             </div>
           </th>
-          <th pSortableColumn="nombre">
+          <th pSortableColumn="hora_inicio">
             <div class="flex items-center gap-2">
-              <i-lucide [img]="BookOpenIcon" class="w-4 h-4"></i-lucide>
-              Nombre <p-sortIcon field="nombre" />
+              <i-lucide [img]="ClockIcon" class="w-4 h-4"></i-lucide>
+              Hora Inicio <p-sortIcon field="hora_inicio" />
+            </div>
+          </th>
+          <th pSortableColumn="hora_fin">
+            <div class="flex items-center gap-2">
+              <i-lucide [img]="ClockIcon" class="w-4 h-4"></i-lucide>
+              Hora Fin <p-sortIcon field="hora_fin" />
             </div>
           </th>
           <th class="text-center" style="width: 20%">Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-materia>
+      <ng-template pTemplate="body" let-horario>
         <tr class="hover:bg-gray-50 transition-colors">
           <td class="text-center">
             <span
               class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium"
             >
-              #{{ materia.id }}
+              #{{ horario.id }}
             </span>
           </td>
           <td>
             <div class="font-semibold text-gray-900">
-              {{ materia.nombre }}
+              {{ horario.hora_inicio }}
+            </div>
+          </td>
+          <td>
+            <div class="font-semibold text-gray-900">
+              {{ horario.hora_fin }}
             </div>
           </td>
           <td>
@@ -195,16 +206,16 @@
               <button
                 type="button"
                 class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="editMateria(materia)"
-                pTooltip="Editar materia"
+                (click)="editHorario(horario)"
+                pTooltip="Editar horario"
               >
                 <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
               </button>
               <button
                 type="button"
                 class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="deleteMateria(materia)"
-                pTooltip="Eliminar materia"
+                (click)="deleteHorario(horario)"
+                pTooltip="Eliminar horario"
               >
                 <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
               </button>
@@ -215,7 +226,7 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="3" class="text-center py-8">
+          <td colspan="4" class="text-center py-8">
             <div class="flex flex-col items-center gap-4 text-gray-500">
               <i-lucide
                 [img]="SearchIcon"
@@ -225,15 +236,15 @@
                 <p class="text-lg font-medium">
                   {{
                     hayFiltrosActivos
-                      ? "No se encontraron materias"
-                      : "No hay materias registradas"
+                      ? "No se encontraron horarios"
+                      : "No hay horarios registrados"
                   }}
                 </p>
                 <p class="text-sm">
                   {{
                     hayFiltrosActivos
                       ? "Intenta ajustar los filtros de búsqueda"
-                      : "Comienza agregando tu primera materia"
+                      : "Comienza agregando tu primer horario"
                   }}
                 </p>
               </div>
@@ -255,7 +266,7 @@
 
   <!-- Dialog -->
   <p-dialog
-    [(visible)]="materiaDialog"
+    [(visible)]="horarioDialog"
     [style]="{
       width: '400px',
       maxWidth: '90vw',
@@ -265,45 +276,70 @@
     [closable]="false"
     [dismissableMask]="true"
     [baseZIndex]="10000"
-    [header]="isEdit ? 'Editar Materia' : 'Nueva Materia'"
+    [header]="isEdit ? 'Editar Horario' : 'Nuevo Horario'"
     styleClass="custom-dialog"
   >
     <ng-template pTemplate="content">
-      <form class="space-y-6" (ngSubmit)="saveMateria()">
+      <form class="space-y-6" (ngSubmit)="saveHorario()">
         <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
             <i-lucide
-              [img]="BookOpenIcon"
+              [img]="ClockIcon"
               class="w-5 h-5 text-blue-400"
             ></i-lucide>
             <h3 class="text-lg font-semibold text-white">
-              Información de la Materia
+              Información del Horario
             </h3>
           </div>
-          <div>
-            <label
-              for="nombre"
-              class="block text-sm font-medium text-slate-200 mb-2"
-            >
-              Nombre *
-            </label>
-            <input
-              id="nombre"
-              type="text"
-              pInputText
-              [(ngModel)]="materiaActual.nombre"
-              name="nombre"
-              required
-              autofocus
-              class="w-full"
-              placeholder="Ingrese el nombre de la materia"
-            />
-            <small
-              class="text-red-400 mt-1 block"
-              *ngIf="submitted && !materiaActual.nombre"
-            >
-              El nombre es requerido.
-            </small>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="hora_inicio"
+                class="block text-sm font-medium text-slate-200 mb-2"
+              >
+                Hora de inicio *
+              </label>
+              <input
+                id="hora_inicio"
+                type="time"
+                pInputText
+                [(ngModel)]="horarioActual.hora_inicio"
+                name="hora_inicio"
+                required
+                class="w-full"
+                placeholder="Ej: 08:00"
+              />
+              <small
+                class="text-red-400 mt-1 block"
+                *ngIf="submitted && !horarioActual.hora_inicio"
+              >
+                La hora de inicio es requerida.
+              </small>
+            </div>
+            <div>
+              <label
+                for="hora_fin"
+                class="block text-sm font-medium text-slate-200 mb-2"
+              >
+                Hora de fin *
+              </label>
+              <input
+                id="hora_fin"
+                type="time"
+                pInputText
+                [(ngModel)]="horarioActual.hora_fin"
+                name="hora_fin"
+                required
+                class="w-full"
+                placeholder="Ej: 10:00"
+              />
+              <small
+                class="text-red-400 mt-1 block"
+                *ngIf="submitted && !horarioActual.hora_fin"
+              >
+                La hora de fin es requerida.
+              </small>
+            </div>
           </div>
         </div>
       </form>
@@ -319,10 +355,10 @@
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
         <p-button
-          [label]="isEdit ? 'Actualizar' : 'Crear Materia'"
+          [label]="isEdit ? 'Actualizar' : 'Crear Horario'"
           icon="pi pi-check"
           severity="success"
-          (click)="saveMateria()"
+          (click)="saveHorario()"
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
       </div>

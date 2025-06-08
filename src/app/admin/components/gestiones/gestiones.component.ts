@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MateriasService } from '../../../services/materias/materias.service';
-import { Materias } from '../../../interfaces/materias';
+import { GestionesService } from '../../../services/gestiones/gestiones.service';
+import { Gestiones } from '../../../interfaces/gestiones';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -24,16 +24,16 @@ import {
   Search,
   Filter,
   X,
-  BookOpen,
+  Calendar,
 } from 'lucide-angular';
 
-const MATERIA_VACIA: Materias = {
+const GESTION_VACIA: Gestiones = {
   id: 0,
-  nombre: '',
+  periodo: '',
 };
 
 @Component({
-  selector: 'app-materias',
+  selector: 'app-gestiones',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -50,10 +50,10 @@ const MATERIA_VACIA: Materias = {
     LucideAngularModule,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: './materias.component.html',
+  templateUrl: './gestiones.component.html',
   standalone: true,
 })
-export class MateriasComponent {
+export class GestionesComponent {
   readonly TrashIcon = Trash;
   readonly EditIcon = Edit;
   readonly PlusIcon = Plus;
@@ -63,12 +63,12 @@ export class MateriasComponent {
   readonly SearchIcon = Search;
   readonly FilterIcon = Filter;
   readonly XIcon = X;
-  readonly BookOpenIcon = BookOpen;
+  readonly CalendarIcon = Calendar;
 
-  materias: Materias[] = [];
-  materiasFiltradas: Materias[] = [];
-  materiaActual: Materias = { ...MATERIA_VACIA };
-  materiaDialog = false;
+  gestiones: Gestiones[] = [];
+  gestionesFiltradas: Gestiones[] = [];
+  gestionActual: Gestiones = { ...GESTION_VACIA };
+  gestionDialog = false;
   submitted = false;
   first = 0;
   rows = 10;
@@ -78,34 +78,34 @@ export class MateriasComponent {
   searchTerm = '';
 
   constructor(
-    private materiasService: MateriasService,
+    private gestionesService: GestionesService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.obtenerMaterias();
+    this.obtenerGestiones();
   }
 
-  obtenerMaterias(): void {
-    this.materiasService.getMaterias().subscribe({
+  obtenerGestiones(): void {
+    this.gestionesService.getGestiones().subscribe({
       next: (data) => {
-        this.materias = data;
+        this.gestiones = data;
         this.aplicarFiltros();
       },
-      error: (err) => console.error('Error al obtener materias', err),
+      error: (err) => console.error('Error al obtener gestiones', err),
     });
   }
 
   aplicarFiltros(): void {
-    let materiasFiltradas = [...this.materias];
+    let gestionesFiltradas = [...this.gestiones];
     if (this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
-      materiasFiltradas = materiasFiltradas.filter((materia) =>
-        materia.nombre.toLowerCase().includes(termino)
+      gestionesFiltradas = gestionesFiltradas.filter((gestion) =>
+        gestion.periodo.toLowerCase().includes(termino)
       );
     }
-    this.materiasFiltradas = materiasFiltradas;
+    this.gestionesFiltradas = gestionesFiltradas;
     this.first = 0;
   }
 
@@ -150,43 +150,43 @@ export class MateriasComponent {
   }
 
   isLastPage(): boolean {
-    return this.materiasFiltradas
-      ? this.first + this.rows >= this.materiasFiltradas.length
+    return this.gestionesFiltradas
+      ? this.first + this.rows >= this.gestionesFiltradas.length
       : true;
   }
 
   isFirstPage(): boolean {
-    return this.materiasFiltradas ? this.first === 0 : true;
+    return this.gestionesFiltradas ? this.first === 0 : true;
   }
 
   openNew() {
-    this.materiaActual = { ...MATERIA_VACIA };
+    this.gestionActual = { ...GESTION_VACIA };
     this.submitted = false;
     this.isEdit = false;
-    this.materiaDialog = true;
+    this.gestionDialog = true;
   }
 
-  editMateria(materia: Materias) {
-    this.materiaActual = { ...materia };
+  editGestion(gestion: Gestiones) {
+    this.gestionActual = { ...gestion };
     this.isEdit = true;
-    this.materiaDialog = true;
+    this.gestionDialog = true;
   }
 
-  deleteMateria(materia: Materias) {
+  deleteGestion(gestion: Gestiones) {
     this.confirmationService.confirm({
-      message: `¿Seguro que deseas eliminar la materia "${materia.nombre}"?`,
+      message: `¿Seguro que deseas eliminar la gestión "${gestion.periodo}"?`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.materiasService.deleteMateria(materia.id).subscribe({
+        this.gestionesService.deleteGestion(gestion.id).subscribe({
           next: () => {
-            this.materias = this.materias.filter((m) => m.id !== materia.id);
+            this.gestiones = this.gestiones.filter((g) => g.id !== gestion.id);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Eliminado',
-              detail: 'Materia eliminada correctamente',
+              detail: 'Gestión eliminada correctamente',
               life: 3000,
             });
           },
@@ -194,7 +194,7 @@ export class MateriasComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo eliminar la materia',
+              detail: 'No se pudo eliminar la gestión',
               life: 3000,
             });
           },
@@ -204,58 +204,58 @@ export class MateriasComponent {
   }
 
   hideDialog() {
-    this.materiaDialog = false;
+    this.gestionDialog = false;
     this.submitted = false;
   }
 
-  saveMateria() {
+  saveGestion() {
     this.submitted = true;
-    if (this.materiaActual.nombre) {
-      if (this.isEdit && this.materiaActual.id) {
-        this.materiasService
-          .updateMateria(this.materiaActual.id, this.materiaActual)
+    if (this.gestionActual.periodo) {
+      if (this.isEdit && this.gestionActual.id) {
+        this.gestionesService
+          .updateGestion(this.gestionActual.id, this.gestionActual)
           .subscribe({
-            next: (materia) => {
-              const idx = this.materias.findIndex((m) => m.id === materia.id);
-              if (idx > -1) this.materias[idx] = materia;
+            next: (gestion) => {
+              const idx = this.gestiones.findIndex((g) => g.id === gestion.id);
+              if (idx > -1) this.gestiones[idx] = gestion;
               this.aplicarFiltros();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Actualizado',
-                detail: 'Materia actualizada correctamente',
+                detail: 'Gestión actualizada correctamente',
                 life: 3000,
               });
-              this.materiaDialog = false;
-              this.materiaActual = { ...MATERIA_VACIA };
+              this.gestionDialog = false;
+              this.gestionActual = { ...GESTION_VACIA };
             },
             error: () => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'No se pudo actualizar la materia',
+                detail: 'No se pudo actualizar la gestión',
                 life: 3000,
               });
             },
           });
       } else {
-        this.materiasService.createMateria(this.materiaActual).subscribe({
-          next: (materia) => {
-            this.materias.push(materia);
+        this.gestionesService.createGestion(this.gestionActual).subscribe({
+          next: (gestion) => {
+            this.gestiones.push(gestion);
             this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Registrado',
-              detail: 'Materia creada correctamente',
+              detail: 'Gestión creada correctamente',
               life: 3000,
             });
-            this.materiaDialog = false;
-            this.materiaActual = { ...MATERIA_VACIA };
+            this.gestionDialog = false;
+            this.gestionActual = { ...GESTION_VACIA };
           },
           error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo crear la materia',
+              detail: 'No se pudo crear la gestión',
               life: 3000,
             });
           },

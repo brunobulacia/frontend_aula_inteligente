@@ -5,23 +5,23 @@
   <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
     <div class="flex items-center gap-4">
       <div class="bg-white/20 p-3 rounded-full">
-        <i-lucide [img]="BookOpenIcon" class="w-8 h-8"></i-lucide>
+        <i-lucide [img]="CalendarIcon" class="w-8 h-8"></i-lucide>
       </div>
       <div>
-        <h1 class="text-3xl font-bold mb-2">Gestión de Materias</h1>
+        <h1 class="text-3xl font-bold mb-2">Administrar Gestiones</h1>
         <p class="text-white/80">
-          Administra las materias del sistema de manera eficiente
+          Administra las gestiones del sistema de manera eficiente
         </p>
       </div>
     </div>
     <div class="mt-6 flex items-center gap-6 text-white/90">
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materias.length }}</span>
-        <span>Materias totales</span>
+        <span class="text-2xl font-bold">{{ gestiones.length }}</span>
+        <span>Gestiones totales</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materiasFiltradas.length }}</span>
-        <span>Materias mostradas</span>
+        <span class="text-2xl font-bold">{{ gestionesFiltradas.length }}</span>
+        <span>Gestiones mostradas</span>
       </div>
     </div>
   </div>
@@ -48,7 +48,7 @@
           for="search"
           class="block text-sm font-medium text-slate-200 mb-2"
         >
-          Buscar por nombre de materia
+          Buscar por periodo
         </label>
         <div class="relative">
           <input
@@ -57,7 +57,7 @@
             pInputText
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
-            placeholder="Buscar materias..."
+            placeholder="Buscar gestiones..."
             class="w-full pl-10"
           />
         </div>
@@ -97,7 +97,7 @@
     <p-toolbar class="mb-6 border-0 bg-white shadow-sm rounded-lg">
       <ng-template pTemplate="start">
         <p-button
-          label="Nueva Materia"
+          label="Nueva Gestión"
           severity="success"
           class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
           (onClick)="openNew()"
@@ -146,13 +146,13 @@
 
     <!-- Enhanced Table -->
     <p-table
-      [value]="materiasFiltradas"
+      [value]="gestionesFiltradas"
       [paginator]="true"
       [rows]="rows"
       [first]="first"
       [showCurrentPageReport]="true"
       [tableStyle]="{ 'min-width': '30rem' }"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} materias"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} gestiones"
       (onPage)="pageChange($event)"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [rowHover]="true"
@@ -166,28 +166,28 @@
               ID <p-sortIcon field="id" />
             </div>
           </th>
-          <th pSortableColumn="nombre">
+          <th pSortableColumn="periodo">
             <div class="flex items-center gap-2">
-              <i-lucide [img]="BookOpenIcon" class="w-4 h-4"></i-lucide>
-              Nombre <p-sortIcon field="nombre" />
+              <i-lucide [img]="CalendarIcon" class="w-4 h-4"></i-lucide>
+              Periodo <p-sortIcon field="periodo" />
             </div>
           </th>
           <th class="text-center" style="width: 20%">Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-materia>
+      <ng-template pTemplate="body" let-gestion>
         <tr class="hover:bg-gray-50 transition-colors">
           <td class="text-center">
             <span
               class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium"
             >
-              #{{ materia.id }}
+              #{{ gestion.id }}
             </span>
           </td>
           <td>
             <div class="font-semibold text-gray-900">
-              {{ materia.nombre }}
+              {{ gestion.periodo }}
             </div>
           </td>
           <td>
@@ -195,16 +195,16 @@
               <button
                 type="button"
                 class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="editMateria(materia)"
-                pTooltip="Editar materia"
+                (click)="editGestion(gestion)"
+                pTooltip="Editar gestión"
               >
                 <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
               </button>
               <button
                 type="button"
                 class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="deleteMateria(materia)"
-                pTooltip="Eliminar materia"
+                (click)="deleteGestion(gestion)"
+                pTooltip="Eliminar gestión"
               >
                 <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
               </button>
@@ -225,15 +225,15 @@
                 <p class="text-lg font-medium">
                   {{
                     hayFiltrosActivos
-                      ? "No se encontraron materias"
-                      : "No hay materias registradas"
+                      ? "No se encontraron gestiones"
+                      : "No hay gestiones registradas"
                   }}
                 </p>
                 <p class="text-sm">
                   {{
                     hayFiltrosActivos
                       ? "Intenta ajustar los filtros de búsqueda"
-                      : "Comienza agregando tu primera materia"
+                      : "Comienza agregando tu primera gestión"
                   }}
                 </p>
               </div>
@@ -255,7 +255,7 @@
 
   <!-- Dialog -->
   <p-dialog
-    [(visible)]="materiaDialog"
+    [(visible)]="gestionDialog"
     [style]="{
       width: '400px',
       maxWidth: '90vw',
@@ -265,44 +265,44 @@
     [closable]="false"
     [dismissableMask]="true"
     [baseZIndex]="10000"
-    [header]="isEdit ? 'Editar Materia' : 'Nueva Materia'"
+    [header]="isEdit ? 'Editar Gestión' : 'Nueva Gestión'"
     styleClass="custom-dialog"
   >
     <ng-template pTemplate="content">
-      <form class="space-y-6" (ngSubmit)="saveMateria()">
+      <form class="space-y-6" (ngSubmit)="saveGestion()">
         <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
             <i-lucide
-              [img]="BookOpenIcon"
+              [img]="CalendarIcon"
               class="w-5 h-5 text-blue-400"
             ></i-lucide>
             <h3 class="text-lg font-semibold text-white">
-              Información de la Materia
+              Información de la Gestión
             </h3>
           </div>
           <div>
             <label
-              for="nombre"
+              for="periodo"
               class="block text-sm font-medium text-slate-200 mb-2"
             >
-              Nombre *
+              Periodo *
             </label>
             <input
-              id="nombre"
+              id="periodo"
               type="text"
               pInputText
-              [(ngModel)]="materiaActual.nombre"
-              name="nombre"
+              [(ngModel)]="gestionActual.periodo"
+              name="periodo"
               required
               autofocus
               class="w-full"
-              placeholder="Ingrese el nombre de la materia"
+              placeholder="Ej: 1-2024"
             />
             <small
               class="text-red-400 mt-1 block"
-              *ngIf="submitted && !materiaActual.nombre"
+              *ngIf="submitted && !gestionActual.periodo"
             >
-              El nombre es requerido.
+              El periodo es requerido.
             </small>
           </div>
         </div>
@@ -319,10 +319,10 @@
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
         <p-button
-          [label]="isEdit ? 'Actualizar' : 'Crear Materia'"
+          [label]="isEdit ? 'Actualizar' : 'Crear Gestión'"
           icon="pi pi-check"
           severity="success"
-          (click)="saveMateria()"
+          (click)="saveGestion()"
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
       </div>

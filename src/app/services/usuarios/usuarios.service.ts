@@ -31,6 +31,14 @@ export class UsuarioService {
     );
   }
 
+  getProfesores(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${environment.api}usuarios/profesores/`, {
+      headers: {
+        Authorization: `Token ${this.token}`,
+      },
+    });
+  }
+
   createUsuario(usuario: Usuario): Observable<Usuario> {
     return this.http.post<Usuario>(
       `${environment.api}usuarios/usuarios/`,

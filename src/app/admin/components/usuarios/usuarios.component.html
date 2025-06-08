@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gray-50 p-6">
+<div class="min-h-screen rounded-2xl p-6">
   <p-toast></p-toast>
 
   <!-- Header Section -->
-  <div class="gradient-header">
+  <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
     <div class="flex items-center gap-4">
       <div class="bg-white/20 p-3 rounded-full">
         <i-lucide [img]="UsersIcon" class="w-8 h-8"></i-lucide>
@@ -27,28 +27,30 @@
   </div>
 
   <!-- Filtros Section -->
-  <div class="filter-section">
+  <div class="bg-slate-900 rounded-xl p-6 mb-6 border border-slate-600">
     <div class="flex items-center gap-3 mb-4">
       <div class="bg-blue-100 p-2 rounded-full">
         <i-lucide [img]="FilterIcon" class="w-5 h-5 text-blue-600"></i-lucide>
       </div>
-      <h2 class="text-lg font-semibold text-gray-800">Filtros de Búsqueda</h2>
-      <div *ngIf="hayFiltrosActivos" class="filter-badge">
+      <h2 class="text-lg font-semibold text-white">Filtros de Búsqueda</h2>
+      <div
+        *ngIf="hayFiltrosActivos"
+        class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-2"
+      >
         {{ contadorFiltros }} filtro(s) activo(s)
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
       <!-- Búsqueda por texto -->
-      <div class="search-input">
+      <div class="relative">
         <label
           for="search"
-          class="block text-sm font-medium text-gray-700 mb-2"
+          class="block text-sm font-medium text-slate-200 mb-2"
         >
           Buscar por nombre o email
         </label>
         <div class="relative">
-          <i-lucide [img]="SearchIcon" class="search-icon w-4 h-4"></i-lucide>
           <input
             id="search"
             type="text"
@@ -65,7 +67,7 @@
       <div>
         <label
           for="tipoUsuario"
-          class="block text-sm font-medium text-gray-700 mb-2"
+          class="block text-sm font-medium text-slate-200 mb-2"
         >
           Tipo de usuario
         </label>
@@ -86,7 +88,7 @@
       <div class="flex justify-end">
         <button
           *ngIf="hayFiltrosActivos"
-          class="clear-filters-btn"
+          class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5"
           (click)="limpiarFiltros()"
           type="button"
         >
@@ -124,7 +126,7 @@
         <p-button
           label="Nuevo Usuario"
           severity="success"
-          class="mr-2 action-button"
+          class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
           (onClick)="openNew()"
         >
           <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
@@ -139,7 +141,7 @@
             (click)="prev()"
             [disabled]="isFirstPage()"
             text
-            class="action-button"
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
             pTooltip="Página anterior"
           >
             <i-lucide [img]="ChevronLeftIcon" class="w-4 h-4"></i-lucide>
@@ -149,7 +151,7 @@
             severity="secondary"
             (click)="reset()"
             text
-            class="action-button"
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
             pTooltip="Reiniciar paginación"
           >
             <i-lucide [img]="RotateCcwIcon" class="w-4 h-4"></i-lucide>
@@ -160,7 +162,7 @@
             (click)="next()"
             [disabled]="isLastPage()"
             text
-            class="action-button"
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
             pTooltip="Página siguiente"
           >
             <i-lucide [img]="ChevronRightIcon" class="w-4 h-4"></i-lucide>
@@ -230,7 +232,7 @@
           <td>
             <div class="flex items-center gap-3">
               <div
-                class="user-avatar"
+                class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm"
                 [style.background-color]="getAvatarColor(usuario.id)"
               >
                 {{ getInitials(usuario.nombre, usuario.apellidos) }}
@@ -270,7 +272,7 @@
             <div class="flex items-center justify-center gap-2">
               <button
                 type="button"
-                class="action-button p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-all"
+                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
                 (click)="editUsuario(usuario)"
                 pTooltip="Editar usuario"
               >
@@ -278,7 +280,7 @@
               </button>
               <button
                 type="button"
-                class="action-button p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-all"
+                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
                 (click)="deleteUsuario(usuario)"
                 pTooltip="Eliminar usuario"
               >
@@ -315,7 +317,7 @@
               </div>
               <button
                 *ngIf="hayFiltrosActivos"
-                class="clear-filters-btn mt-2"
+                class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5 mt-2"
                 (click)="limpiarFiltros()"
                 type="button"
               >
@@ -332,7 +334,11 @@
   <!-- Enhanced Dialog -->
   <p-dialog
     [(visible)]="usuarioDialog"
-    [style]="{ width: '600px', maxWidth: '90vw' }"
+    [style]="{
+      width: '600px',
+      maxWidth: '90vw',
+      background: '#e2e8d0'
+    }"
     [modal]="true"
     [closable]="false"
     [dismissableMask]="true"
@@ -343,10 +349,10 @@
     <ng-template pTemplate="content">
       <form class="space-y-6" (ngSubmit)="saveUsuario()">
         <!-- Información Personal -->
-        <div class="form-section">
+        <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
-            <i-lucide [img]="UserIcon" class="w-5 h-5 text-blue-600"></i-lucide>
-            <h3 class="text-lg font-semibold text-gray-800">
+            <i-lucide [img]="UserIcon" class="w-5 h-5 text-blue-400"></i-lucide>
+            <h3 class="text-lg font-semibold text-white">
               Información Personal
             </h3>
           </div>
@@ -355,7 +361,7 @@
             <div>
               <label
                 for="nombre"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Nombre *
               </label>
@@ -371,7 +377,7 @@
                 placeholder="Ingrese el nombre"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.nombre"
               >
                 El nombre es requerido.
@@ -381,7 +387,7 @@
             <div>
               <label
                 for="apellidos"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Apellidos *
               </label>
@@ -396,7 +402,7 @@
                 placeholder="Ingrese los apellidos"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.apellidos"
               >
                 Los apellidos son requeridos.
@@ -408,7 +414,7 @@
             <div>
               <label
                 for="email"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Email *
               </label>
@@ -423,7 +429,7 @@
                 placeholder="usuario@ejemplo.com"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.email"
               >
                 El email es requerido.
@@ -433,7 +439,7 @@
             <div>
               <label
                 for="tipo_usuario"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Tipo de Usuario *
               </label>
@@ -451,7 +457,7 @@
                 <option value="admin">Administrador</option>
               </select>
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.tipo_usuario"
               >
                 El tipo de usuario es requerido.
@@ -463,7 +469,7 @@
           <div *ngIf="!isEdit" class="mt-4">
             <label
               for="password"
-              class="block text-sm font-medium text-gray-700 mb-2"
+              class="block text-sm font-medium text-slate-200 mb-2"
             >
               Contraseña *
             </label>
@@ -478,7 +484,7 @@
               placeholder="Ingrese una contraseña segura"
             />
             <small
-              class="text-red-500 mt-1 block"
+              class="text-red-400 mt-1 block"
               *ngIf="submitted && !usuarioActual.password"
             >
               La contraseña es requerida.
@@ -489,20 +495,20 @@
         <p-divider></p-divider>
 
         <!-- Información de Dirección -->
-        <div class="form-section">
+        <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
             <i-lucide
               [img]="MapPinIcon"
-              class="w-5 h-5 text-green-600"
+              class="w-5 h-5 text-green-400"
             ></i-lucide>
-            <h3 class="text-lg font-semibold text-gray-800">Dirección</h3>
+            <h3 class="text-lg font-semibold text-white">Dirección</h3>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
                 for="ciudad"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Ciudad *
               </label>
@@ -517,7 +523,7 @@
                 placeholder="Ingrese la ciudad"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.direccion.ciudad"
               >
                 La ciudad es requerida.
@@ -527,7 +533,7 @@
             <div>
               <label
                 for="zona"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Zona *
               </label>
@@ -542,7 +548,7 @@
                 placeholder="Ingrese la zona"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.direccion.zona"
               >
                 La zona es requerida.
@@ -554,7 +560,7 @@
             <div class="md:col-span-2">
               <label
                 for="calle"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Calle *
               </label>
@@ -569,7 +575,7 @@
                 placeholder="Ingrese la calle"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="submitted && !usuarioActual.direccion.calle"
               >
                 La calle es requerida.
@@ -579,7 +585,7 @@
             <div>
               <label
                 for="numero"
-                class="block text-sm font-medium text-gray-700 mb-2"
+                class="block text-sm font-medium text-slate-200 mb-2"
               >
                 Número *
               </label>
@@ -594,7 +600,7 @@
                 placeholder="123"
               />
               <small
-                class="text-red-500 mt-1 block"
+                class="text-red-400 mt-1 block"
                 *ngIf="
                   submitted && usuarioActual.direccion.numero === undefined
                 "
@@ -607,7 +613,7 @@
           <div class="mt-4">
             <label
               for="referencia"
-              class="block text-sm font-medium text-gray-700 mb-2"
+              class="block text-sm font-medium text-slate-200 mb-2"
             >
               Referencia *
             </label>
@@ -622,7 +628,7 @@
               placeholder="Punto de referencia"
             />
             <small
-              class="text-red-500 mt-1 block"
+              class="text-red-400 mt-1 block"
               *ngIf="submitted && !usuarioActual.direccion.referencia"
             >
               La referencia es requerida.
@@ -640,14 +646,14 @@
           severity="secondary"
           text
           (click)="hideDialog()"
-          class="action-button"
+          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
         <p-button
           [label]="isEdit ? 'Actualizar' : 'Crear Usuario'"
           icon="pi pi-check"
           severity="success"
           (click)="saveUsuario()"
-          class="action-button"
+          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
       </div>
     </ng-template>

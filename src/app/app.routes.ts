@@ -8,6 +8,12 @@ import { PerfilComponent } from './components/usuario/perfil/perfil.component';
 import { roleGuard } from './guards/role-guard/role.guard';
 import { UsuariosComponent } from './admin/components/usuarios/usuarios.component';
 import { AdminComponent } from './admin/components/admin/admin.component';
+import { CursosComponent } from './admin/components/cursos/cursos.component';
+import { HorariosComponent } from './admin/components/horarios/horarios.component';
+import { GestionesComponent } from './admin/components/gestiones/gestiones.component';
+import { GestionCursoComponent } from './admin/components/gestion-curso/gestion-curso.component';
+import { HorarioDiaComponent } from './admin/components/horario-dia/horario-dia.component';
+import { AsignacionesComponent } from './admin/components/asignaciones/asignaciones.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +42,30 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         component: UsuariosComponent,
+      },
+      {
+        path: 'cursos',
+        component: CursosComponent,
+      },
+      {
+        path: 'horarios',
+        component: HorariosComponent,
+      },
+      {
+        path: 'gestiones',
+        component: GestionesComponent,
+      },
+      {
+        path: 'gestiones-cursos',
+        component: GestionCursoComponent,
+      },
+      {
+        path: 'horarios-dias',
+        component: HorarioDiaComponent,
+      },
+      {
+        path: 'asignaciones',
+        component: AsignacionesComponent,
       },
     ],
   },

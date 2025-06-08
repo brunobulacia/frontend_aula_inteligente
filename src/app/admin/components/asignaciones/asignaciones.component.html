@@ -5,23 +5,25 @@
   <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
     <div class="flex items-center gap-4">
       <div class="bg-white/20 p-3 rounded-full">
-        <i-lucide [img]="BookOpenIcon" class="w-8 h-8"></i-lucide>
+        <i-lucide [img]="CalendarClockIcon" class="w-8 h-8"></i-lucide>
       </div>
       <div>
-        <h1 class="text-3xl font-bold mb-2">Gestión de Materias</h1>
+        <h1 class="text-3xl font-bold mb-2">Gestión de Asignaciones</h1>
         <p class="text-white/80">
-          Administra las materias del sistema de manera eficiente
+          Administra las asignaciones de materias, profesores y horarios
         </p>
       </div>
     </div>
     <div class="mt-6 flex items-center gap-6 text-white/90">
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materias.length }}</span>
-        <span>Materias totales</span>
+        <span class="text-2xl font-bold">{{ asignaciones.length }}</span>
+        <span>Asignaciones totales</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ materiasFiltradas.length }}</span>
-        <span>Materias mostradas</span>
+        <span class="text-2xl font-bold">{{
+          asignacionesFiltradas.length
+        }}</span>
+        <span>Asignaciones mostradas</span>
       </div>
     </div>
   </div>
@@ -48,7 +50,7 @@
           for="search"
           class="block text-sm font-medium text-slate-200 mb-2"
         >
-          Buscar por nombre de materia
+          Buscar por materia, profesor, curso, gestión u horario
         </label>
         <div class="relative">
           <input
@@ -57,9 +59,13 @@
             pInputText
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
-            placeholder="Buscar materias..."
+            placeholder="Buscar asignaciones..."
             class="w-full pl-10"
           />
+          <i-lucide
+            [img]="SearchIcon"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+          ></i-lucide>
         </div>
       </div>
       <div></div>
@@ -97,7 +103,7 @@
     <p-toolbar class="mb-6 border-0 bg-white shadow-sm rounded-lg">
       <ng-template pTemplate="start">
         <p-button
-          label="Nueva Materia"
+          label="Nueva Asignación"
           severity="success"
           class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
           (onClick)="openNew()"
@@ -146,13 +152,13 @@
 
     <!-- Enhanced Table -->
     <p-table
-      [value]="materiasFiltradas"
+      [value]="asignacionesFiltradas"
       [paginator]="true"
       [rows]="rows"
       [first]="first"
       [showCurrentPageReport]="true"
       [tableStyle]="{ 'min-width': '30rem' }"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} materias"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asignaciones"
       (onPage)="pageChange($event)"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [rowHover]="true"
@@ -161,50 +167,36 @@
     >
       <ng-template pTemplate="header">
         <tr class="bg-gray-50">
-          <th pSortableColumn="id" class="text-center" style="width: 15%">
-            <div class="flex items-center justify-center gap-2">
-              ID <p-sortIcon field="id" />
-            </div>
-          </th>
-          <th pSortableColumn="nombre">
-            <div class="flex items-center gap-2">
-              <i-lucide [img]="BookOpenIcon" class="w-4 h-4"></i-lucide>
-              Nombre <p-sortIcon field="nombre" />
-            </div>
-          </th>
+          <th>Materia</th>
+          <th>Curso</th>
+          <th>Profesor</th>
+          <th>Gestión</th>
+          <th>Horarios</th>
           <th class="text-center" style="width: 20%">Acciones</th>
         </tr>
       </ng-template>
-
-      <ng-template pTemplate="body" let-materia>
+      <ng-template pTemplate="body" let-asignacion>
         <tr class="hover:bg-gray-50 transition-colors">
-          <td class="text-center">
-            <span
-              class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium"
-            >
-              #{{ materia.id }}
-            </span>
-          </td>
-          <td>
-            <div class="font-semibold text-gray-900">
-              {{ materia.nombre }}
-            </div>
-          </td>
+          <td>{{ asignacion.materia_nombre }}</td>
+          <td>{{ asignacion.curso_nombre }}</td>
+          <td>{{ asignacion.profesor_nombre }}</td>
+          <td>{{ asignacion.gestion_periodo }}</td>
+          <td>{{ asignacion.dia_horarios }}</td>
           <td>
             <div class="flex items-center justify-center gap-2">
               <button
                 type="button"
-                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="editMateria(materia)"
-                pTooltip="Editar materia"
+                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:-translate-y-0.5 hover:shadow-lg"
+                (click)="editAsignacion(asignacion)"
+                pTooltip="Editar asignación"
               >
                 <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
               </button>
               <button
                 type="button"
                 class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="deleteMateria(materia)"
-                pTooltip="Eliminar materia"
+                (click)="deleteAsignacion(asignacion)"
+                pTooltip="Eliminar asignación"
               >
                 <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
               </button>
@@ -212,10 +204,9 @@
           </td>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="3" class="text-center py-8">
+          <td colspan="6" class="text-center py-8">
             <div class="flex flex-col items-center gap-4 text-gray-500">
               <i-lucide
                 [img]="SearchIcon"
@@ -225,15 +216,15 @@
                 <p class="text-lg font-medium">
                   {{
                     hayFiltrosActivos
-                      ? "No se encontraron materias"
-                      : "No hay materias registradas"
+                      ? "No se encontraron asignaciones"
+                      : "No hay asignaciones registradas"
                   }}
                 </p>
                 <p class="text-sm">
                   {{
                     hayFiltrosActivos
                       ? "Intenta ajustar los filtros de búsqueda"
-                      : "Comienza agregando tu primera materia"
+                      : "Comienza agregando tu primera asignación"
                   }}
                 </p>
               </div>
@@ -255,9 +246,9 @@
 
   <!-- Dialog -->
   <p-dialog
-    [(visible)]="materiaDialog"
+    [(visible)]="asignacionDialog"
     [style]="{
-      width: '400px',
+      width: '500px',
       maxWidth: '90vw',
       background: '#e2e8d0'
     }"
@@ -265,44 +256,129 @@
     [closable]="false"
     [dismissableMask]="true"
     [baseZIndex]="10000"
-    [header]="isEdit ? 'Editar Materia' : 'Nueva Materia'"
+    [header]="isEdit ? 'Editar Asignación' : 'Nueva Asignación'"
     styleClass="custom-dialog"
   >
     <ng-template pTemplate="content">
-      <form class="space-y-6" (ngSubmit)="saveMateria()">
+      <form class="space-y-6" (ngSubmit)="saveAsignacion()">
         <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
             <i-lucide
-              [img]="BookOpenIcon"
+              [img]="CalendarClockIcon"
               class="w-5 h-5 text-blue-400"
             ></i-lucide>
             <h3 class="text-lg font-semibold text-white">
-              Información de la Materia
+              Información de la Asignación
             </h3>
           </div>
-          <div>
+          <div class="mb-4">
             <label
-              for="nombre"
+              for="materia"
               class="block text-sm font-medium text-slate-200 mb-2"
             >
-              Nombre *
+              Materia *
             </label>
-            <input
-              id="nombre"
-              type="text"
-              pInputText
-              [(ngModel)]="materiaActual.nombre"
-              name="nombre"
-              required
-              autofocus
-              class="w-full"
-              placeholder="Ingrese el nombre de la materia"
-            />
+            <p-dropdown
+              [options]="materias"
+              optionLabel="nombre"
+              optionValue="id"
+              [(ngModel)]="selectedMateria"
+              name="materia"
+              placeholder="Seleccione una materia"
+              [showClear]="true"
+              [ngClass]="{ 'p-invalid': submitted && !selectedMateria }"
+            ></p-dropdown>
             <small
               class="text-red-400 mt-1 block"
-              *ngIf="submitted && !materiaActual.nombre"
+              *ngIf="submitted && !selectedMateria"
             >
-              El nombre es requerido.
+              Debe seleccionar una materia.
+            </small>
+          </div>
+          <div class="mb-4">
+            <label
+              for="gestionCurso"
+              class="block text-sm font-medium text-slate-200 mb-2"
+            >
+              Curso *
+            </label>
+            <p-dropdown
+              [options]="gestionCursos"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedGestionCurso"
+              name="gestionCurso"
+              placeholder="Seleccione un curso"
+              [showClear]="true"
+              [ngClass]="{ 'p-invalid': submitted && !selectedGestionCurso }"
+            ></p-dropdown>
+            <small
+              class="text-red-400 mt-1 block"
+              *ngIf="submitted && !selectedGestionCurso"
+            >
+              Debe seleccionar un curso.
+            </small>
+          </div>
+          <div class="mb-4">
+            <label
+              for="profesor"
+              class="block text-sm font-medium text-slate-200 mb-2"
+            >
+              Profesor *
+            </label>
+            <p-dropdown
+              [options]="profesores"
+              [optionLabel]="'nombre'"
+              [optionValue]="'id'"
+              [(ngModel)]="selectedProfesor"
+              name="profesor"
+              placeholder="Seleccione un profesor"
+              [showClear]="true"
+              [ngClass]="{ 'p-invalid': submitted && !selectedProfesor }"
+              [filter]="true"
+            >
+              <ng-template let-prof pTemplate="item">
+                {{ prof.nombre }} {{ prof.apellidos }}
+              </ng-template>
+            </p-dropdown>
+            <small
+              class="text-red-400 mt-1 block"
+              *ngIf="submitted && !selectedProfesor"
+            >
+              Debe seleccionar un profesor.
+            </small>
+          </div>
+          <div class="mb-4">
+            <label
+              for="diaHorarios"
+              class="block text-sm font-medium text-slate-200 mb-2"
+            >
+              Horarios (puede seleccionar varios) *
+            </label>
+            <p-multiSelect
+              [options]="diasHorariosOptions"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedDiaHorarios"
+              name="diaHorarios"
+              [showClear]="true"
+              placeholder="Seleccione uno o más horarios"
+              [filter]="true"
+              [style]="{ width: '100%' }"
+              [ngClass]="{
+                'p-invalid': submitted && !selectedDiaHorarios.length
+              }"
+              appendTo="body"
+            >
+              <ng-template let-h pTemplate="item">
+                {{ h.label }}
+              </ng-template>
+            </p-multiSelect>
+            <small
+              class="text-red-400 mt-1 block"
+              *ngIf="submitted && !selectedDiaHorarios.length"
+            >
+              Debe seleccionar al menos un horario.
             </small>
           </div>
         </div>
@@ -319,12 +395,16 @@
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
         <p-button
-          [label]="isEdit ? 'Actualizar' : 'Crear Materia'"
-          icon="pi pi-check"
+          [label]="isEdit ? 'Actualizar' : 'Crear Asignación'"
           severity="success"
-          (click)="saveMateria()"
+          (click)="saveAsignacion()"
           class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
-        />
+        >
+          <i-lucide
+            [img]="isEdit ? RotateCcwIcon : PlusIcon"
+            class="w-4 h-4 mr-2"
+          ></i-lucide>
+        </p-button>
       </div>
     </ng-template>
   </p-dialog>
