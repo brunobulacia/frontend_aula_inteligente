@@ -36,4 +36,17 @@ export class PerfilComponent {
   ngOnInit(): void {
     this.perfil = this.authService.getProfile();
   }
+
+  getUserRole(): string {
+    switch (this.perfil?.tipo_usuario) {
+      case 'admin':
+        return 'Administrador';
+      case 'prof':
+        return 'Profesor';
+      case 'alum':
+        return 'Alumno';
+      default:
+        return 'Usuario';
+    }
+  }
 }

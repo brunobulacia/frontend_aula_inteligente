@@ -20,6 +20,13 @@ import {
   School,
   CalendarClock,
   UserRoundCheck,
+  House,
+  BookOpenTextIcon,
+  NotebookPenIcon,
+  PcCaseIcon,
+  HandIcon,
+  ListChecks,
+  UserPlus,
 } from 'lucide-angular';
 
 @Component({
@@ -50,42 +57,22 @@ export class AdminComponent implements OnInit {
   readonly SchoolIcon = School;
   readonly CalendarClockIcon = CalendarClock;
   readonly UserRoundCheckIcon = UserRoundCheck;
+  readonly HouseIcon = House;
+  readonly BookOpenTextIcon = BookOpenTextIcon;
+  readonly NotebookPenIcon = NotebookPenIcon;
+  readonly PcCaseIcon = PcCaseIcon;
+  readonly HandIcon = HandIcon;
+  readonly ListChecksIcon = ListChecks;
+  readonly UserPlusIcon = UserPlus;
   openAcademica = false;
   openUsuarios = false;
   openHorarios = false;
+  openActividades = false;
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.currentUser = this.authService.getProfile();
   }
-
-  items = [
-    {
-      label: 'Gestión Académica',
-      items: [
-        {
-          label: 'Materias',
-          icon: 'pi pi-book',
-          routerLink: ['/admin/materias'],
-        },
-        {
-          label: 'Cursos',
-          icon: 'pi pi-graduation-cap',
-          RouterLink: ['/admin/cursos'],
-        },
-      ],
-    },
-    {
-      label: 'Administración',
-      items: [
-        {
-          label: 'Usuarios',
-          icon: 'pi pi-users',
-          routerLink: ['/admin/usuarios'],
-        },
-      ],
-    },
-  ];
 
   logoutItem = [
     {

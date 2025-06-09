@@ -1,13 +1,260 @@
-<div class="flex min-h-screen bg-gray-50">
+<div class="flex h-screen bg-gray-50 overflow-hidden">
   <!-- Sidebar -->
-  <p-panelMenu
-    [model]="items"
-    class="w-64 min-h-screen rounded-none shadow-md bg-white"
-    styleClass="border-r border-gray-200"
-  ></p-panelMenu>
+  <aside class="w-80 h-screen bg-slate-900 text-white flex flex-col shadow-lg">
+    <!-- User Profile -->
+    <!--  <aside
+    class="fixed top-0 left-0 flex flex-col w-80 min-w-[16rem] h-screen bg-slate-900 border-r border-slate-200 text-white shadow-lg z-10"
+  > -->
+    <div
+      class="flex items-center gap-3 px-6 py-4 my-8 bg-white/10 rounded-xl mx-4 mb-4 border border-white/20"
+    >
+      <p-avatar
+        [label]="getUserInitials()"
+        styleClass="bg-blue-500 text-white"
+        size="large"
+        shape="circle"
+      ></p-avatar>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-white font-semibold text-sm truncate">
+          {{ currentUser?.nombre || "Administrador" }}
+          {{ currentUser?.apellidos || "Sistema" }}
+        </h3>
+        <p class="text-blue-200 text-xs">{{ getUserRole() }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          <span class="text-green-200 text-xs">En línea</span>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 py-6 overflow-y-auto">
+      <ul class="space-y-2">
+        <li>
+          <a
+            routerLink="/inicio"
+            routerLinkActive="bg-slate-800 text-blue-400"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+          >
+            <i-lucide
+              [img]="HouseIcon"
+              class="w-5 h-5 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            Inicio
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/inicio/perfil"
+            routerLinkActive="bg-slate-800 text-blue-400"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+          >
+            <i-lucide
+              [img]="UserRoundCheckIcon"
+              class="w-5 h-5 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            Mi Perfil
+          </a>
+        </li>
+        <li *ngIf="currentUser?.tipo_usuario == 'admin'">
+          <a
+            routerLink="/admin/usuarios"
+            routerLinkActive="bg-slate-300 text-blue-400"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+          >
+            <i-lucide
+              [img]="UsersIcon"
+              class="w-5 h-5 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            Administración
+          </a>
+        </li>
+        <li *ngIf="currentUser?.tipo_usuario === 'prof'">
+          <button
+            type="button"
+            (click)="openProfesor = !openProfesor"
+            class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium text-lg"
+          >
+            <i-lucide
+              [img]="BookOpenTextIcon"
+              class="w-5 h-5 text-blue-300"
+            ></i-lucide>
+            <span>Mis Materias</span>
+            <svg
+              [ngClass]="{ 'rotate-90': openProfesor }"
+              class="w-4 h-4 ml-auto transition-transform"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+          <div
+            *ngIf="openProfesor && currentUser?.tipo_usuario === 'prof'"
+            class="pl-8 space-y-1"
+          >
+            <a
+              routerLink="/inicio/profesor/materias/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="BookOpenTextIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Materias
+            </a>
+            <a
+              routerLink="/inicio/profesor/notas/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="NotebookPenIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Notas
+            </a>
+            <a
+              routerLink="/inicio/profesor/asistencias/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="PcCaseIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Asistencias
+            </a>
+            <a
+              routerLink="/inicio/profesor/participaciones/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="HandIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Participaciones
+            </a>
+          </div>
+        </li>
+        <li *ngIf="currentUser?.tipo_usuario === 'alum'">
+          <a
+            routerLink="/inicio/alumno/materias"
+            routerLinkActive="bg-slate-800 text-blue-400"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+          >
+            <i-lucide
+              [img]="BookOpenTextIcon"
+              class="w-5 h-5 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            Mis Materias
+          </a>
+        </li>
+        <li *ngIf="currentUser?.tipo_usuario === 'alum'">
+          <button
+            type="button"
+            (click)="openAlumno = !openAlumno"
+            class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium text-lg"
+          >
+            <i-lucide
+              [img]="ListChecksIcon"
+              class="w-5 h-5 text-blue-300"
+            ></i-lucide>
+            <span>Actividades</span>
+            <svg
+              [ngClass]="{ 'rotate-90': openAlumno }"
+              class="w-4 h-4 ml-auto transition-transform"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+          <div
+            *ngIf="openAlumno && currentUser?.tipo_usuario === 'alum'"
+            class="pl-8 space-y-1"
+          >
+            <a
+              routerLink="/inicio/alumno/notas/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="NotebookPenIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Mis Notas
+            </a>
+            <a
+              routerLink="/inicio/alumno/asistencias/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="PcCaseIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Mis Asistencias
+            </a>
+            <a
+              routerLink="/inicio/alumno/participaciones/"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="HandIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Mis Participaciones
+            </a>
+          </div>
+        </li>
+
+        <li
+          *ngIf="
+            currentUser?.tipo_usuario === 'prof' ||
+            currentUser?.tipo_usuario === 'alum'
+          "
+        >
+          <a
+            routerLink="/inicio/dashboard"
+            routerLinkActive="bg-slate-800 text-blue-400"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+          >
+            <i-lucide
+              [img]="ChartNoAxesCombinedIcon"
+              class="w-5 h-5 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            Mi Dashboard
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="px-4 py-6">
+      <button
+        (click)="logout()"
+        class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-red-500 bg-red-50 hover:bg-red-100 font-semibold transition cursor-pointer"
+      >
+        <i-lucide [img]="LogOutIcon" class="w-5 h-5"></i-lucide>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
 
   <!-- Main content -->
-  <div class="flex-1 p-8">
+  <div class="flex-1 h-screen overflow-auto p-8">
     <router-outlet></router-outlet>
   </div>
 </div>

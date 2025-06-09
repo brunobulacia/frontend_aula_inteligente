@@ -32,10 +32,21 @@
     >
       <!-- Gestión Académica -->
       <div>
+        <a
+          routerLink="/inicio"
+          routerLinkActive="bg-blue-100 text-blue-700"
+          class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+        >
+          <i-lucide
+            [img]="HouseIcon"
+            class="w-5 h-5 text-blue-300 group-hover:text-white"
+          ></i-lucide>
+          <span>Inicio</span>
+        </a>
         <button
           type="button"
           (click)="openAcademica = !openAcademica"
-          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium"
         >
           <i-lucide [img]="BookIcon" class="w-5 h-5 text-blue-300"></i-lucide>
           <span>Gestión Académica</span>
@@ -110,6 +121,17 @@
             ></i-lucide>
             <span>Asignaciones</span>
           </a>
+          <a
+            routerLink="/admin/inscripciones"
+            routerLinkActive="bg-blue-100 text-blue-700"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group"
+          >
+            <i-lucide
+              [img]="UserPlusIcon"
+              class="w-4 h-4 text-blue-300 group-hover:text-white"
+            ></i-lucide>
+            <span>Inscripciones</span>
+          </a>
         </div>
       </div>
       <!-- Usuarios -->
@@ -117,7 +139,7 @@
         <button
           type="button"
           (click)="openUsuarios = !openUsuarios"
-          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium"
         >
           <i-lucide [img]="UsersIcon" class="w-5 h-5 text-blue-300"></i-lucide>
           <span>Usuarios</span>
@@ -155,7 +177,7 @@
         <button
           type="button"
           (click)="openHorarios = !openHorarios"
-          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-semibold"
+          class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium"
         >
           <i-lucide
             [img]="CalendarCheck2Icon"
@@ -201,6 +223,71 @@
             <span>Horarios-Dias</span>
           </a>
         </div>
+        <div *ngIf="currentUser?.tipo_usuario === 'admin'">
+          <button
+            type="button"
+            (click)="openActividades = !openActividades"
+            class="flex items-center w-full gap-2 px-4 py-3 rounded-lg text-white hover:bg-blue-700 transition font-medium text-lg"
+          >
+            <i-lucide
+              [img]="ListChecksIcon"
+              class="w-5 h-5 text-blue-300"
+            ></i-lucide>
+            <span>Actividades</span>
+            <svg
+              [ngClass]="{ 'rotate-90': openActividades }"
+              class="w-4 h-4 ml-auto transition-transform"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+          <div
+            *ngIf="openActividades && currentUser?.tipo_usuario === 'admin'"
+            class="pl-8 space-y-1"
+          >
+            <a
+              routerLink="/admin/notas"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="NotebookPenIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Notas
+            </a>
+            <a
+              routerLink="/admin/asistencias"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="PcCaseIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Asistencias
+            </a>
+            <a
+              routerLink="/admin/participaciones"
+              routerLinkActive="bg-slate-800 text-blue-400"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-blue-600 transition group font-medium text-lg"
+            >
+              <i-lucide
+                [img]="HandIcon"
+                class="w-5 h-5 text-blue-300 group-hover:text-white"
+              ></i-lucide>
+              Gestionar Participaciones
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -208,7 +295,7 @@
     <div class="mt-auto px-4 py-6">
       <button
         (click)="logout()"
-        class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-red-500 bg-red-50 hover:bg-red-100 font-semibold transition"
+        class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-red-500 bg-red-50 hover:bg-red-100 font-semibold transition cursor-pointer"
       >
         <i-lucide [img]="LogOutIcon" class="w-5 h-5"></i-lucide>
         <span>Cerrar Sesión</span>

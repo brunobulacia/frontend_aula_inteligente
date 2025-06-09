@@ -1,4 +1,3 @@
-// login.component.ts
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -11,14 +10,32 @@ import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 
+// PrimeNG imports
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { MessageModule } from 'primeng/message';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CardModule,
+    InputTextModule,
+    PasswordModule,
+    ButtonModule,
+    FloatLabelModule,
+    MessageModule,
+  ],
 })
 export class LoginComponent {
   formulario!: FormGroup;
+  isLoading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -41,6 +58,7 @@ export class LoginComponent {
 
   login() {
     if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
       swal.fire({
         icon: 'error',
         title: 'Error',
@@ -49,10 +67,12 @@ export class LoginComponent {
       return;
     }
 
+    this.isLoading = true;
     console.log('Formulario enviado:', this.formulario.value);
 
     this.authService.login(this.formulario.value).subscribe({
       next: (response) => {
+        this.isLoading = false;
         swal.fire({
           icon: 'success',
           title: 'Éxito',
@@ -65,6 +85,7 @@ export class LoginComponent {
         this.router.navigate(['/inicio']);
       },
       error: (error) => {
+        this.isLoading = false;
         swal.fire({
           icon: 'error',
           title: 'Error',
