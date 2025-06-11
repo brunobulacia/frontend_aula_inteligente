@@ -1,1 +1,362 @@
-<p>notas works!</p>
+<div class="min-h-screen rounded-2xl p-6">
+  <p-toast></p-toast>
+
+  <!-- Header Section -->
+  <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
+    <div class="flex items-center gap-4">
+      <div class="bg-white/20 p-3 rounded-full">
+        <i-lucide [img]="BookOpenIcon" class="w-8 h-8"></i-lucide>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold mb-2">Gestión de Notas</h1>
+        <p class="text-white/80">
+          Administra las notas del sistema de manera eficiente
+        </p>
+      </div>
+    </div>
+    <div class="mt-6 flex items-center gap-6 text-white/90">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl font-bold">{{ notas.length }}</span>
+        <span>Notas totales</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-2xl font-bold">{{ notasFiltradas.length }}</span>
+        <span>Notas mostradas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros Section -->
+  <div class="bg-slate-900 rounded-xl p-6 mb-6 border border-slate-600">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="bg-blue-100 p-2 rounded-full">
+        <i-lucide [img]="FilterIcon" class="w-5 h-5 text-blue-600"></i-lucide>
+      </div>
+      <h2 class="text-lg font-semibold text-white">Filtros de Búsqueda</h2>
+      <div
+        *ngIf="hayFiltrosActivos"
+        class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-2"
+      >
+        {{ contadorFiltros }} filtro(s) activo(s)
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <!-- Búsqueda por texto -->
+      <div class="relative">
+        <label
+          for="search"
+          class="block text-sm font-medium text-slate-200 mb-2"
+        >
+          Buscar en notas
+        </label>
+        <div class="relative">
+          <input
+            id="search"
+            type="text"
+            pInputText
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            placeholder="Buscar notas..."
+            class="w-full pl-10"
+          />
+        </div>
+      </div>
+      <div></div>
+      <!-- Botón limpiar filtros -->
+      <div class="flex justify-end">
+        <button
+          *ngIf="hayFiltrosActivos"
+          class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5"
+          (click)="limpiarFiltros()"
+          type="button"
+        >
+          <i-lucide [img]="XIcon" class="w-4 h-4"></i-lucide>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- Resumen de filtros activos -->
+    <div
+      *ngIf="hayFiltrosActivos"
+      class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200"
+    >
+      <div class="flex flex-wrap items-center gap-2 text-sm text-blue-800">
+        <span class="font-medium">Filtros activos:</span>
+        <span *ngIf="searchTerm.trim()" class="bg-blue-200 px-2 py-1 rounded">
+          Búsqueda: "{{ searchTerm }}"
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <p-card class="shadow-lg border-0">
+    <!-- Toolbar -->
+    <p-toolbar class="mb-6 border-0 bg-white shadow-sm rounded-lg">
+      <ng-template pTemplate="start">
+        <p-button
+          label="Nueva Nota"
+          severity="success"
+          class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+          (onClick)="openNew()"
+        >
+          <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
+        </p-button>
+      </ng-template>
+
+      <ng-template pTemplate="end">
+        <div class="flex items-center gap-2">
+          <p-button
+            type="button"
+            severity="secondary"
+            (click)="prev()"
+            [disabled]="isFirstPage()"
+            text
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+            pTooltip="Página anterior"
+          >
+            <i-lucide [img]="ChevronLeftIcon" class="w-4 h-4"></i-lucide>
+          </p-button>
+          <p-button
+            type="button"
+            severity="secondary"
+            (click)="reset()"
+            text
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+            pTooltip="Reiniciar paginación"
+          >
+            <i-lucide [img]="RotateCcwIcon" class="w-4 h-4"></i-lucide>
+          </p-button>
+          <p-button
+            type="button"
+            severity="secondary"
+            (click)="next()"
+            [disabled]="isLastPage()"
+            text
+            class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+            pTooltip="Página siguiente"
+          >
+            <i-lucide [img]="ChevronRightIcon" class="w-4 h-4"></i-lucide>
+          </p-button>
+        </div>
+      </ng-template>
+    </p-toolbar>
+
+    <!-- Enhanced Table -->
+    <p-table
+      [value]="notasFiltradas"
+      [paginator]="true"
+      [rows]="rows"
+      [first]="first"
+      [showCurrentPageReport]="true"
+      [tableStyle]="{ 'min-width': '30rem' }"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} notas"
+      (onPage)="pageChange($event)"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [rowHover]="true"
+      dataKey="ser"
+      styleClass="p-datatable-striped"
+    >
+      <ng-template pTemplate="header">
+        <tr class="bg-gray-50">
+          <th>Ser</th>
+          <th>Saber</th>
+          <th>Hacer</th>
+          <th>Decidir</th>
+          <th>Nota Final</th>
+          <th class="text-center" style="width: 20%">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-nota>
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td>{{ nota.ser }}</td>
+          <td>{{ nota.saber }}</td>
+          <td>{{ nota.hacer }}</td>
+          <td>{{ nota.decidir }}</td>
+          <td>{{ nota.nota_final }}</td>
+          <td>
+            <div class="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
+                (click)="editNota(nota)"
+                pTooltip="Editar nota"
+              >
+                <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
+              </button>
+              <button
+                type="button"
+                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
+                (click)="deleteNota(nota)"
+                pTooltip="Eliminar nota"
+              >
+                <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center py-8">
+            <div class="flex flex-col items-center gap-4 text-gray-500">
+              <i-lucide
+                [img]="SearchIcon"
+                class="w-12 h-12 text-gray-300"
+              ></i-lucide>
+              <div>
+                <p class="text-lg font-medium">
+                  {{
+                    hayFiltrosActivos
+                      ? "No se encontraron notas"
+                      : "No hay notas registradas"
+                  }}
+                </p>
+                <p class="text-sm">
+                  {{
+                    hayFiltrosActivos
+                      ? "Intenta ajustar los filtros de búsqueda"
+                      : "Comienza agregando tu primera nota"
+                  }}
+                </p>
+              </div>
+              <button
+                *ngIf="hayFiltrosActivos"
+                class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5 mt-2"
+                (click)="limpiarFiltros()"
+                type="button"
+              >
+                <i-lucide [img]="XIcon" class="w-4 h-4"></i-lucide>
+                Limpiar filtros
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Dialog -->
+  <p-dialog
+    [(visible)]="notaDialog"
+    [style]="{
+      width: '400px',
+      maxWidth: '90vw',
+      background: '#e2e8d0'
+    }"
+    [modal]="true"
+    [closable]="false"
+    [dismissableMask]="true"
+    [baseZIndex]="10000"
+    [header]="isEdit ? 'Editar Nota' : 'Nueva Nota'"
+    styleClass="custom-dialog"
+  >
+    <ng-template pTemplate="content">
+      <form class="space-y-6" (ngSubmit)="saveNota()">
+        <div class="bg-slate-700 rounded-xl p-6 mb-4">
+          <div class="flex items-center gap-2 mb-4">
+            <i-lucide
+              [img]="BookOpenIcon"
+              class="w-5 h-5 text-blue-400"
+            ></i-lucide>
+            <h3 class="text-lg font-semibold text-white">
+              Información de la Nota
+            </h3>
+          </div>
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-2"
+                >Ser *</label
+              >
+              <input
+                type="number"
+                pInputText
+                [(ngModel)]="notaActual.ser"
+                name="ser"
+                required
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-2"
+                >Saber *</label
+              >
+              <input
+                type="number"
+                pInputText
+                [(ngModel)]="notaActual.saber"
+                name="saber"
+                required
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-2"
+                >Hacer *</label
+              >
+              <input
+                type="number"
+                pInputText
+                [(ngModel)]="notaActual.hacer"
+                name="hacer"
+                required
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-2"
+                >Decidir *</label
+              >
+              <input
+                type="number"
+                pInputText
+                [(ngModel)]="notaActual.decidir"
+                name="decidir"
+                required
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-2"
+                >Nota Final *</label
+              >
+              <input
+                type="number"
+                pInputText
+                [(ngModel)]="notaActual.nota_final"
+                name="nota_final"
+                required
+                class="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end gap-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          text
+          (click)="hideDialog()"
+          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+        />
+        <p-button
+          [label]="isEdit ? 'Actualizar' : 'Crear Nota'"
+          icon="pi pi-check"
+          severity="success"
+          (click)="saveNota()"
+          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+        />
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</div>

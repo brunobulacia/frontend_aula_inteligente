@@ -10,7 +10,9 @@ import {
   profGuard,
   alumGuard,
 } from './guards/role-guard/role.guard';
-import { UsuariosComponent } from './admin/components/usuarios/usuarios.component';
+// TODO: Update the path below if the file exists elsewhere, or create the file if missing.
+
+import { UsuariosComponent } from './admin/components/inscripciones/usuarios/usuarios.component';
 import { AdminComponent } from './admin/components/admin/admin.component';
 import { CursosComponent } from './admin/components/cursos/cursos.component';
 import { HorariosComponent } from './admin/components/horarios/horarios.component';
@@ -18,10 +20,6 @@ import { GestionesComponent } from './admin/components/gestiones/gestiones.compo
 import { GestionCursoComponent } from './admin/components/gestion-curso/gestion-curso.component';
 import { HorarioDiaComponent } from './admin/components/horario-dia/horario-dia.component';
 import { AsignacionesComponent } from './admin/components/asignaciones/asignaciones.component';
-import { MateriasAlumnoComponent } from './alumno/components/materias/materias.component';
-import { NotasAlumnoComponent } from './alumno/components/notas/notas.component';
-import { AsistenciasAlumnoComponent } from './alumno/components/asistencias/asistencias.component';
-import { ParticipacionesAlumnoComponent } from './alumno/components/participaciones/participaciones.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MateriasProfComponent } from './profesor/components/materias/materias.component';
 import { NotasProfComponent } from './profesor/components/notas/notas.component';
@@ -29,8 +27,6 @@ import { AsistenciasProfComponent } from './profesor/components/asistencias/asis
 import { ParticipacionesProfComponent } from './profesor/components/participaciones/participaciones.component';
 import { InscripcionesComponent } from './admin/components/inscripciones/inscripciones.component';
 import { NotasAdminComponent } from './admin/components/notas/notas.component';
-import { AsistenciasAdminComponent } from './admin/components/asistencias/asistencias.component';
-import { ParticipacionesAdminComponent } from './admin/components/participaciones/participaciones.component';
 
 export const routes: Routes = [
   {
@@ -44,28 +40,7 @@ export const routes: Routes = [
     children: [
       { path: 'perfil', component: PerfilComponent },
       { path: '', redirectTo: 'perfil', pathMatch: 'full' },
-      {
-        path: 'alumno',
-        canActivate: [authGuard, alumGuard],
-        children: [
-          {
-            path: 'materias',
-            component: MateriasAlumnoComponent,
-          },
-          {
-            path: 'notas',
-            component: NotasAlumnoComponent,
-          },
-          {
-            path: 'asistencias',
-            component: AsistenciasAlumnoComponent,
-          },
-          {
-            path: 'participaciones',
-            component: ParticipacionesAlumnoComponent,
-          },
-        ],
-      },
+
       {
         path: 'profesor',
         canActivate: [authGuard, profGuard],
@@ -139,14 +114,6 @@ export const routes: Routes = [
       {
         path: 'notas',
         component: NotasAdminComponent,
-      },
-      {
-        path: 'asistencias',
-        component: AsistenciasAdminComponent,
-      },
-      {
-        path: 'participaciones',
-        component: ParticipacionesAdminComponent,
       },
     ],
   },
