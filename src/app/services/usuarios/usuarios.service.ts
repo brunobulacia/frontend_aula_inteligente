@@ -13,7 +13,7 @@ export class UsuarioService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${environment.api}usuarios/usuarios/`, {
+    return this.http.get<Usuario[]>(`${environment.api}usuarios/listar/`, {
       headers: {
         Authorization: `Token ${this.token}`,
       },
@@ -21,14 +21,11 @@ export class UsuarioService {
   }
 
   getUsuario(id: number): Observable<Usuario> {
-    return this.http.get<Usuario>(
-      `${environment.api}usuarios/usuarios/${id}/`,
-      {
-        headers: {
-          Authorization: `Token ${this.token}`,
-        },
-      }
-    );
+    return this.http.get<Usuario>(`${environment.api}usuarios/${id}/`, {
+      headers: {
+        Authorization: `Token ${this.token}`,
+      },
+    });
   }
 
   getProfesores(): Observable<Usuario[]> {
@@ -40,15 +37,11 @@ export class UsuarioService {
   }
 
   createUsuario(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(
-      `${environment.api}usuarios/usuarios/`,
-      usuario,
-      {
-        headers: {
-          Authorization: `Token ${this.token}`,
-        },
-      }
-    );
+    return this.http.post<Usuario>(`${environment.api}usuarios/`, usuario, {
+      headers: {
+        Authorization: `Token ${this.token}`,
+      },
+    });
   }
 
   updateUsuario(id: number, usuario: Usuario): Observable<Usuario> {
@@ -64,7 +57,7 @@ export class UsuarioService {
   }
 
   deleteUsuario(id: number): Observable<any> {
-    return this.http.delete(`${environment.api}usuarios/usuarios/${id}/`, {
+    return this.http.delete(`${environment.api}usuarios/listar/${id}/`, {
       headers: {
         Authorization: `Token ${this.token}`,
       },
