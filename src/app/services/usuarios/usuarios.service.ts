@@ -13,7 +13,7 @@ export class UsuarioService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${environment.api}usuarios/listar/`, {
+    return this.http.get<Usuario[]>(`${environment.api}usuarios/usuarios/`, {
       headers: {
         Authorization: `Token ${this.token}`,
       },
