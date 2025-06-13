@@ -8,6 +8,8 @@ import {
   Calificar,
   verParticipaciones,
   verAsistencias,
+  registrarAsistencia,
+  RegistrarParticipacion,
 } from '../../interfaces/profesorMaterias';
 
 @Injectable({
@@ -56,10 +58,10 @@ export class ProfesorService {
   ): Observable<verAsistencias[]> {
     const headers = { Authorization: `Token ${this.token}` };
     return this.http.get<verAsistencias[]>(
-      `${environment.api}alumnos/profesores/mis-materias/`,
+      `${environment.api}alumnos/profesores/ver-asistencias/`,
       {
         params: {
-          gestion_id: gestion_curso_id.toString(),
+          gestion_curso_id: gestion_curso_id.toString(),
           materia_id: materia_id.toString(),
         },
         headers,
@@ -73,13 +75,41 @@ export class ProfesorService {
   ): Observable<verParticipaciones[]> {
     const headers = { Authorization: `Token ${this.token}` };
     return this.http.get<verParticipaciones[]>(
-      `${environment.api}alumnos/profesores/mis-materias/participaciones/`,
+      `${environment.api}alumnos/profesores/ver-participaciones/`,
       {
         params: {
-          gestion_id: gestion_curso_id.toString(),
+          gestion_curso_id: gestion_curso_id.toString(),
           materia_id: materia_id.toString(),
         },
         headers,
+      }
+    );
+  }
+
+  registrarAsistencia(
+    payload: registrarAsistencia
+  ): Observable<registrarAsistencia> {
+    return this.http.post<registrarAsistencia>(
+      `${environment.api}alumnos/profesores/registrar-asistencia/`,
+      payload,
+      {
+        headers: {
+          Authorization: `Token ${this.token}`,
+        },
+      }
+    );
+  }
+
+  registrarParticipacion(
+    payload: RegistrarParticipacion
+  ): Observable<RegistrarParticipacion> {
+    return this.http.post<RegistrarParticipacion>(
+      `${environment.api}alumnos/profesores/registrar-participacion/`,
+      payload,
+      {
+        headers: {
+          Authorization: `Token ${this.token}`,
+        },
       }
     );
   }

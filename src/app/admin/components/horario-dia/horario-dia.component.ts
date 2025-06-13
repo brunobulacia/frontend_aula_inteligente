@@ -1,173 +1,113 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HorariosService } from '../../../services/horarios/horarios.service';
-import {
-  DiaHorarioAPI,
-  DiaHorarioTable,
-  Horarios,
-} from '../../../interfaces/horarios';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { Toolbar } from 'primeng/toolbar';
 import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
 import {
   LucideAngularModule,
-  Trash,
-  Edit,
   Plus,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
-  Search,
-  Filter,
+  Edit,
+  Trash,
   X,
   Clock,
-  CalendarClock,
+  Search,
+  Filter,
 } from 'lucide-angular';
 
-const DIA_HORARIO_VACIO: DiaHorarioAPI = {
-  id: 0,
-  dia: 0,
-  horario: 0,
-};
+import { DiaHorarioTable } from '../../../interfaces/horarios';
+import { HorarioDiasService } from '../../../services/horario-dias/horario-dias.service';
 
-// Nueva interfaz para la vista de la tabla
-interface DiaHorarioView {
-  id: number;
-  dia: number;
-  dia_nombre: string;
-  horario: number;
-  horario_inicio: string;
-  horario_fin: string;
-}
+const HORARIO_VACIO: DiaHorarioTable = {
+  id: 0,
+  dia: '',
+  hora_inicio: '',
+  hora_fin: '',
+};
 
 @Component({
   selector: 'app-horario-dia',
+  templateUrl: './horario-dia.component.html',
+  standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     FormsModule,
-    ButtonModule,
+    ReactiveFormsModule,
     TableModule,
     DialogModule,
     ConfirmDialogModule,
     InputTextModule,
     ToastModule,
+    Toolbar,
     CardModule,
-    DividerModule,
-    DropdownModule,
+    ButtonModule,
     LucideAngularModule,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: './horario-dia.component.html',
-  standalone: true,
-  styles: '',
 })
-export class HorarioDiaComponent {
-  readonly TrashIcon = Trash;
-  readonly EditIcon = Edit;
+export class HorarioDiaComponent implements OnInit {
   readonly PlusIcon = Plus;
-  readonly ChevronLeftIcon = ChevronLeft;
-  readonly ChevronRightIcon = ChevronRight;
-  readonly RotateCcwIcon = RotateCcw;
-  readonly SearchIcon = Search;
-  readonly FilterIcon = Filter;
+  readonly EditIcon = Edit;
+  readonly TrashIcon = Trash;
   readonly XIcon = X;
   readonly ClockIcon = Clock;
+  readonly SearchIcon = Search;
+  readonly FilterIcon = Filter;
 
-  diasHorarios: DiaHorarioAPI[] = [];
-  diasHorariosTable: DiaHorarioTable[] = [];
-  diasHorariosFiltrados: DiaHorarioTable[] = [];
-  diaHorarioActual: DiaHorarioAPI = { id: 0, dia: 0, horario: 0 };
-  diaHorarioDialog = false;
+  horarios: DiaHorarioTable[] = [];
+  horariosFiltrados: DiaHorarioTable[] = [];
+  horarioActual: DiaHorarioTable = { ...HORARIO_VACIO };
+  horarioDialog = false;
+  isEdit = false;
   submitted = false;
   first = 0;
   rows = 10;
-  isEdit = false;
 
   // Filtros
   searchTerm = '';
 
-  // Para selects
-  dias: { id: number; nombre: string }[] = [];
-  horarios: Horarios[] = [];
-  selectedDia: number | null = null;
-  selectedHorario: number | null = null;
-  selectedHorarioFin: Horarios | null = null;
-
   constructor(
-    private horariosService: HorariosService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private horariosService: HorarioDiasService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
-    this.obtenerDiasHorarios();
-    this.cargarDias();
-    this.cargarHorarios();
+    this.obtenerHorarios();
   }
 
-  obtenerDiasHorarios(): void {
+  obtenerHorarios(): void {
     this.horariosService.getDiasHorarios().subscribe({
       next: (data) => {
-        this.diasHorarios = data;
-        this.diasHorariosTable = this.mapDiaHorarioToTable(data);
+        console.log('Horarios obtenidos:', data);
+        this.horarios = data;
         this.aplicarFiltros();
       },
-      error: (err) => console.error('Error al obtener dia-horarios', err),
-    });
-  }
-
-  mapDiaHorarioToTable(data: DiaHorarioAPI[]): DiaHorarioTable[] {
-    return data.map((item) => {
-      const diaObj = this.dias.find((d) => d.id === item.dia);
-      const horarioObj = this.horarios.find((h) => h.id === item.horario);
-      return {
-        id: item.id,
-        dia_nombre: diaObj ? diaObj.nombre : '',
-        horario_inicio: horarioObj ? horarioObj.hora_inicio : '',
-        horario_fin: horarioObj ? horarioObj.hora_fin : '',
-      };
-    });
-  }
-
-  cargarDias(): void {
-    this.dias = this.horariosService.getDias();
-  }
-
-  cargarHorarios(): void {
-    this.horariosService.getHorarios().subscribe({
-      next: (data) => {
-        this.horarios = data;
-        // Actualizar la vista si ya hay datos cargados
-        if (this.diasHorarios.length > 0) {
-          this.diasHorariosTable = this.mapDiaHorarioToTable(this.diasHorarios);
-          this.aplicarFiltros();
-        }
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar los horarios',
+        });
       },
-      error: (err) => console.error('Error al obtener horarios', err),
     });
   }
 
   aplicarFiltros(): void {
-    let diasHorariosFiltrados = [...this.diasHorariosTable];
+    let filtrados = [...this.horarios];
     if (this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
-      diasHorariosFiltrados = diasHorariosFiltrados.filter(
-        (item) =>
-          item.dia_nombre.toLowerCase().includes(termino) ||
-          item.horario_inicio.toLowerCase().includes(termino) ||
-          item.horario_fin.toLowerCase().includes(termino)
+      filtrados = filtrados.filter((h) =>
+        h.dia.toLowerCase().includes(termino)
       );
     }
-    this.diasHorariosFiltrados = diasHorariosFiltrados;
+    this.horariosFiltrados = filtrados;
     this.first = 0;
   }
 
@@ -212,45 +152,39 @@ export class HorarioDiaComponent {
   }
 
   isLastPage(): boolean {
-    return this.diasHorariosFiltrados
-      ? this.first + this.rows >= this.diasHorariosFiltrados.length
+    return this.horariosFiltrados
+      ? this.first + this.rows >= this.horariosFiltrados.length
       : true;
   }
 
   isFirstPage(): boolean {
-    return this.diasHorariosFiltrados ? this.first === 0 : true;
+    return this.horariosFiltrados ? this.first === 0 : true;
   }
 
   openNew() {
-    this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
-    this.selectedDia = null;
-    this.selectedHorario = null;
+    this.horarioActual = { ...HORARIO_VACIO };
     this.submitted = false;
     this.isEdit = false;
-    this.diaHorarioDialog = true;
+    this.horarioDialog = true;
   }
 
-  editDiaHorario(diaHorarioTable: DiaHorarioTable) {
-    const api = this.diasHorarios.find((d) => d.id === diaHorarioTable.id);
-    if (api) {
-      this.diaHorarioActual = { ...api };
-      this.selectedDia = api.dia;
-      this.selectedHorario = api.horario;
-    }
+  editHorario(horario: DiaHorarioTable) {
+    this.horarioActual = { ...horario };
     this.isEdit = true;
-    this.diaHorarioDialog = true;
+    this.horarioDialog = true;
   }
 
-  deleteDiaHorario(diaHorarioTable: DiaHorarioTable) {
+  deleteHorario(horario: DiaHorarioTable) {
     this.confirmationService.confirm({
-      message: `¿Seguro que deseas eliminar el horario del día "${diaHorarioTable.dia_nombre}"?`,
+      message: `¿Seguro que deseas eliminar el horario de "${horario.dia}"?`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.horariosService.deleteDiaHorario(diaHorarioTable.id).subscribe({
+        this.horariosService.deleteDiaHorario(horario.id).subscribe({
           next: () => {
-            this.obtenerDiasHorarios();
+            this.horarios = this.horarios.filter((h) => h.id !== horario.id);
+            this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Eliminado',
@@ -272,32 +206,32 @@ export class HorarioDiaComponent {
   }
 
   hideDialog() {
-    this.diaHorarioDialog = false;
+    this.horarioDialog = false;
     this.submitted = false;
   }
 
-  saveDiaHorario() {
+  saveHorario() {
     this.submitted = true;
-    if (this.selectedDia && this.selectedHorario) {
-      const payload: DiaHorarioAPI = {
-        id: this.diaHorarioActual.id,
-        dia: this.selectedDia,
-        horario: this.selectedHorario,
-      };
-      if (this.isEdit && this.diaHorarioActual.id) {
+    if (
+      this.horarioActual.dia &&
+      this.horarioActual.hora_inicio &&
+      this.horarioActual.hora_fin
+    ) {
+      if (this.isEdit && this.horarioActual.id) {
         this.horariosService
-          .updateDiaHorario(this.diaHorarioActual.id, payload)
+          .updateDiaHorario(this.horarioActual.id, this.horarioActual)
           .subscribe({
-            next: () => {
-              this.obtenerDiasHorarios();
+            next: (horario: DiaHorarioTable) => {
+              const idx = this.horarios.findIndex((h) => h.id === horario.id);
+              if (idx > -1) this.horarios[idx] = horario;
+              this.aplicarFiltros();
+              this.hideDialog();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Actualizado',
                 detail: 'Horario actualizado correctamente',
                 life: 3000,
               });
-              this.diaHorarioDialog = false;
-              this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
             },
             error: () => {
               this.messageService.add({
@@ -309,17 +243,17 @@ export class HorarioDiaComponent {
             },
           });
       } else {
-        this.horariosService.createDiaHorario(payload).subscribe({
-          next: () => {
-            this.obtenerDiasHorarios();
+        this.horariosService.createDiaHorario(this.horarioActual).subscribe({
+          next: (horario: DiaHorarioTable) => {
+            this.horarios.push(horario);
+            this.aplicarFiltros();
+            this.hideDialog();
             this.messageService.add({
               severity: 'success',
-              summary: 'Registrado',
+              summary: 'Creado',
               detail: 'Horario creado correctamente',
               life: 3000,
             });
-            this.diaHorarioDialog = false;
-            this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
           },
           error: () => {
             this.messageService.add({

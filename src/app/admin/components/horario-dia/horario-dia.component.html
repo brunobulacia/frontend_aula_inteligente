@@ -1,7 +1,7 @@
 <div class="min-h-screen rounded-2xl p-6">
   <p-toast></p-toast>
 
-  <!-- Header Section -->
+  <!-- Header -->
   <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg mb-6">
     <div class="flex items-center gap-4">
       <div class="bg-white/20 p-3 rounded-full">
@@ -9,32 +9,28 @@
       </div>
       <div>
         <h1 class="text-3xl font-bold mb-2">Gestión de Horarios por Día</h1>
-        <p class="text-white/80">
-          Administra los horarios asignados a cada día
-        </p>
+        <p class="text-white/80">Administra los horarios de cada día</p>
       </div>
     </div>
     <div class="mt-6 flex items-center gap-6 text-white/90">
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{ diasHorarios.length }}</span>
-        <span>Registros totales</span>
+        <span class="text-2xl font-bold">{{ horarios.length }}</span>
+        <span>Horarios totales</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-bold">{{
-          diasHorariosFiltrados.length
-        }}</span>
-        <span>Registros mostrados</span>
+        <span class="text-2xl font-bold">{{ horariosFiltrados.length }}</span>
+        <span>Mostrados</span>
       </div>
     </div>
   </div>
 
-  <!-- Filtros Section -->
+  <!-- Filtros -->
   <div class="bg-slate-900 rounded-xl p-6 mb-6 border border-slate-600">
     <div class="flex items-center gap-3 mb-4">
       <div class="bg-blue-100 p-2 rounded-full">
         <i-lucide [img]="FilterIcon" class="w-5 h-5 text-blue-600"></i-lucide>
       </div>
-      <h2 class="text-lg font-semibold text-white">Filtros de Búsqueda</h2>
+      <h2 class="text-lg font-semibold text-white">Filtros</h2>
       <div
         *ngIf="hayFiltrosActivos"
         class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-2"
@@ -42,34 +38,25 @@
         {{ contadorFiltros }} filtro(s) activo(s)
       </div>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-      <!-- Búsqueda por texto -->
-      <div class="relative">
-        <label
-          for="search"
-          class="block text-sm font-medium text-slate-200 mb-2"
+      <div>
+        <label class="block text-sm font-medium text-slate-200 mb-2"
+          >Buscar por día</label
         >
-          Buscar por día u horario
-        </label>
-        <div class="relative">
-          <input
-            id="search"
-            type="text"
-            pInputText
-            [(ngModel)]="searchTerm"
-            (input)="onSearchChange()"
-            placeholder="Buscar..."
-            class="w-full pl-10"
-          />
-        </div>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Ej: Lunes"
+          class="w-full"
+        />
       </div>
       <div></div>
-      <!-- Botón limpiar filtros -->
       <div class="flex justify-end">
         <button
           *ngIf="hayFiltrosActivos"
-          class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5"
+          class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm flex items-center gap-2"
           (click)="limpiarFiltros()"
           type="button"
         >
@@ -78,77 +65,31 @@
         </button>
       </div>
     </div>
-
-    <!-- Resumen de filtros activos -->
-    <div
-      *ngIf="hayFiltrosActivos"
-      class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200"
-    >
-      <div class="flex flex-wrap items-center gap-2 text-sm text-blue-800">
-        <span class="font-medium">Filtros activos:</span>
-        <span *ngIf="searchTerm.trim()" class="bg-blue-200 px-2 py-1 rounded">
-          Búsqueda: "{{ searchTerm }}"
-        </span>
-      </div>
-    </div>
   </div>
 
-  <!-- Main Content Card -->
+  <!-- Tabla principal -->
   <p-card class="shadow-lg border-0">
-    <div class="flex justify-between mb-4">
-      <p-button
-        label="Nuevo Horario Día"
-        severity="success"
-        class="mr-2 transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
-        (onClick)="openNew()"
-      >
-        <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
-      </p-button>
-      <div class="flex items-center gap-2">
+    <p-toolbar class="mb-6 border-0 bg-white shadow-sm rounded-lg">
+      <ng-template pTemplate="start">
         <p-button
-          type="button"
-          severity="secondary"
-          (click)="prev()"
-          [disabled]="isFirstPage()"
-          text
-          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
-          pTooltip="Página anterior"
+          label="Nuevo Horario"
+          severity="success"
+          class="mr-2"
+          (onClick)="openNew()"
         >
-          <i-lucide [img]="ChevronLeftIcon" class="w-4 h-4"></i-lucide>
+          <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
         </p-button>
-        <p-button
-          type="button"
-          severity="secondary"
-          (click)="reset()"
-          text
-          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
-          pTooltip="Reiniciar paginación"
-        >
-          <i-lucide [img]="RotateCcwIcon" class="w-4 h-4"></i-lucide>
-        </p-button>
-        <p-button
-          type="button"
-          severity="secondary"
-          (click)="next()"
-          [disabled]="isLastPage()"
-          text
-          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
-          pTooltip="Página siguiente"
-        >
-          <i-lucide [img]="ChevronRightIcon" class="w-4 h-4"></i-lucide>
-        </p-button>
-      </div>
-    </div>
+      </ng-template>
+    </p-toolbar>
 
-    <!-- Enhanced Table -->
     <p-table
-      [value]="diasHorariosFiltrados"
+      [value]="horariosFiltrados"
       [paginator]="true"
       [rows]="rows"
       [first]="first"
       [showCurrentPageReport]="true"
       [tableStyle]="{ 'min-width': '30rem' }"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} horarios"
       (onPage)="pageChange($event)"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [rowHover]="true"
@@ -157,77 +98,39 @@
     >
       <ng-template pTemplate="header">
         <tr class="bg-gray-50">
-          <th pSortableColumn="id" class="text-center" style="width: 10%">
-            <div class="flex items-center justify-center gap-2">
-              ID <p-sortIcon field="id" />
-            </div>
-          </th>
-          <th pSortableColumn="dia_nombre">
-            <div class="flex items-center gap-2">
-              Día <p-sortIcon field="dia_nombre" />
-            </div>
-          </th>
-          <th pSortableColumn="horario_inicio">
-            <div class="flex items-center gap-2">
-              Hora Inicio <p-sortIcon field="horario_inicio" />
-            </div>
-          </th>
-          <th pSortableColumn="horario_fin">
-            <div class="flex items-center gap-2">
-              Hora Fin <p-sortIcon field="horario_fin" />
-            </div>
-          </th>
-          <th class="text-center" style="width: 20%">Acciones</th>
+          <th>ID</th>
+          <th>Día</th>
+          <th>Hora Inicio</th>
+          <th>Hora Fin</th>
+          <th class="text-center">Acciones</th>
         </tr>
       </ng-template>
-
-      <ng-template pTemplate="body" let-item>
-        <tr class="hover:bg-gray-50 transition-colors">
+      <ng-template pTemplate="body" let-horario>
+        <tr>
+          <td>{{ horario.id }}</td>
+          <td>{{ horario.dia }}</td>
+          <td>{{ horario.hora_inicio }}</td>
+          <td>{{ horario.hora_fin }}</td>
           <td class="text-center">
-            <span
-              class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium"
+            <button
+              type="button"
+              class="rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600"
+              (click)="editHorario(horario)"
+              pTooltip="Editar"
             >
-              #{{ item.id }}
-            </span>
-          </td>
-          <td>
-            <div class="font-semibold text-gray-900">
-              {{ item.dia_nombre }}
-            </div>
-          </td>
-          <td>
-            <div class="font-semibold text-gray-900">
-              {{ item.horario_inicio }}
-            </div>
-          </td>
-          <td>
-            <div class="font-semibold text-gray-900">
-              {{ item.horario_fin }}
-            </div>
-          </td>
-          <td>
-            <div class="flex items-center justify-center gap-2">
-              <button
-                type="button"
-                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="editDiaHorario(item)"
-                pTooltip="Editar registro"
-              >
-                <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
-              </button>
-              <button
-                type="button"
-                class="transition-all duration-200 ease-in-out rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600 hover:-translate-y-0.5 hover:shadow-lg"
-                (click)="deleteDiaHorario(item)"
-                pTooltip="Eliminar registro"
-              >
-                <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
-              </button>
-            </div>
+              <i-lucide [img]="EditIcon" class="w-4 h-4"></i-lucide>
+            </button>
+            <button
+              type="button"
+              class="rounded-lg p-2 bg-red-50 hover:bg-red-100 text-red-600"
+              (click)="deleteHorario(horario)"
+              pTooltip="Eliminar"
+            >
+              <i-lucide [img]="TrashIcon" class="w-4 h-4"></i-lucide>
+            </button>
           </td>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="5" class="text-center py-8">
@@ -240,27 +143,18 @@
                 <p class="text-lg font-medium">
                   {{
                     hayFiltrosActivos
-                      ? "No se encontraron registros"
-                      : "No hay registros"
+                      ? "No se encontraron horarios"
+                      : "No hay horarios registrados"
                   }}
                 </p>
                 <p class="text-sm">
                   {{
                     hayFiltrosActivos
                       ? "Intenta ajustar los filtros de búsqueda"
-                      : "Comienza agregando tu primer horario por día"
+                      : "Comienza agregando un horario"
                   }}
                 </p>
               </div>
-              <button
-                *ngIf="hayFiltrosActivos"
-                class="bg-red-600 hover:bg-red-700 text-white border-none px-4 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:-translate-y-0.5 mt-2"
-                (click)="limpiarFiltros()"
-                type="button"
-              >
-                <i-lucide [img]="XIcon" class="w-4 h-4"></i-lucide>
-                Limpiar filtros
-              </button>
             </div>
           </td>
         </tr>
@@ -268,23 +162,18 @@
     </p-table>
   </p-card>
 
-  <!-- Dialog -->
+  <!-- Dialogo crear/editar -->
   <p-dialog
-    [(visible)]="diaHorarioDialog"
-    [style]="{
-      width: '400px',
-      maxWidth: '90vw',
-      background: '#e2e8d0'
-    }"
+    [(visible)]="horarioDialog"
+    [style]="{ width: '400px', maxWidth: '90vw' }"
     [modal]="true"
     [closable]="false"
     [dismissableMask]="true"
-    [baseZIndex]="10000"
-    [header]="isEdit ? 'Editar Horario Día' : 'Nuevo Horario Día'"
+    [header]="isEdit ? 'Editar Horario' : 'Nuevo Horario'"
     styleClass="custom-dialog"
   >
     <ng-template pTemplate="content">
-      <form class="space-y-6" (ngSubmit)="saveDiaHorario()">
+      <form class="space-y-6" (ngSubmit)="saveHorario()">
         <div class="bg-slate-700 rounded-xl p-6 mb-4">
           <div class="flex items-center gap-2 mb-4">
             <i-lucide
@@ -292,68 +181,48 @@
               class="w-5 h-5 text-blue-400"
             ></i-lucide>
             <h3 class="text-lg font-semibold text-white">
-              Información del Horario Día
+              Información del Horario
             </h3>
           </div>
-          <div class="mb-4">
-            <label
-              for="dia"
-              class="block text-sm font-medium text-slate-200 mb-2"
-            >
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">
               Día *
             </label>
-            <p-dropdown
-              [options]="dias"
-              optionLabel="nombre"
-              optionValue="id"
-              [(ngModel)]="selectedDia"
-              name="dia"
-              [showClear]="true"
-              placeholder="Seleccione un día"
-              [filter]="true"
-              [autoDisplayFirst]="false"
-              [style]="{ width: '100%' }"
-              [ngClass]="{ 'p-invalid': submitted && !selectedDia }"
-              appendTo="body"
-            ></p-dropdown>
-            <small
-              class="text-red-400 mt-1 block"
-              *ngIf="submitted && !selectedDia"
-            >
-              El día es requerido.
-            </small>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="horarioActual.dia"
+              name="dia_nombre"
+              required
+              class="w-full"
+              placeholder="Ej: Lunes"
+            />
           </div>
-          <div class="mb-4">
-            <label
-              for="horario"
-              class="block text-sm font-medium text-slate-200 mb-2"
-            >
-              Horario *
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-slate-200 mb-2">
+              Hora Inicio *
             </label>
-            <p-dropdown
-              [options]="horarios"
-              optionLabel="label"
-              optionValue="id"
-              [(ngModel)]="selectedHorario"
-              name="horario"
-              [showClear]="true"
-              placeholder="Seleccione un horario"
-              [filter]="true"
-              [autoDisplayFirst]="false"
-              [style]="{ width: '100%' }"
-              [ngClass]="{ 'p-invalid': submitted && !selectedHorario }"
-              appendTo="body"
-            >
-              <ng-template let-h pTemplate="item">
-                {{ h.hora_inicio }} - {{ h.hora_fin }}
-              </ng-template>
-            </p-dropdown>
-            <small
-              class="text-red-400 mt-1 block"
-              *ngIf="submitted && !selectedHorario"
-            >
-              El horario es requerido.
-            </small>
+            <input
+              type="time"
+              pInputText
+              [(ngModel)]="horarioActual.hora_inicio"
+              name="horario_inicio"
+              required
+              class="w-full"
+            />
+          </div>
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-slate-200 mb-2">
+              Hora Fin *
+            </label>
+            <input
+              type="time"
+              pInputText
+              [(ngModel)]="horarioActual.hora_fin"
+              name="horario_fin"
+              required
+              class="w-full"
+            />
           </div>
         </div>
       </form>
@@ -366,14 +235,12 @@
           severity="secondary"
           text
           (click)="hideDialog()"
-          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
         />
         <p-button
-          [label]="isEdit ? 'Actualizar' : 'Crear Horario Día'"
+          [label]="isEdit ? 'Actualizar' : 'Crear Horario'"
           icon="pi pi-check"
           severity="success"
-          (click)="saveDiaHorario()"
-          class="transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-0.5 hover:shadow-lg"
+          (click)="saveHorario()"
         />
       </div>
     </ng-template>

@@ -1,1 +1,232 @@
-<p>asistencias works!</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 font-sans">
+  <!-- Header -->
+  <header class="mb-8 pb-4 border-b-2 border-indigo-600">
+    <h1 class="text-2xl font-bold text-indigo-600">Control de Asistencias</h1>
+    <p class="text-gray-600 mt-1">Gestión de asistencias de alumnos</p>
+  </header>
+
+  <!-- Filters Section -->
+  <div class="bg-gray-50 rounded-lg p-4 mb-6 flex flex-wrap gap-4">
+    <div class="flex flex-col min-w-[200px]">
+      <label for="filterDate" class="text-sm font-medium text-gray-700 mb-1"
+        >Filtrar por fecha:</label
+      >
+      <input
+        type="date"
+        id="filterDate"
+        [(ngModel)]="filtroFecha"
+        (change)="aplicarFiltros()"
+        class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <div class="flex flex-col min-w-[200px]">
+      <label for="filterStudent" class="text-sm font-medium text-gray-700 mb-1"
+        >Buscar alumno:</label
+      >
+      <input
+        type="text"
+        id="filterStudent"
+        [(ngModel)]="filtroAlumno"
+        (input)="aplicarFiltros()"
+        placeholder="Nombre del alumno"
+        class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <div class="flex flex-col min-w-[200px]">
+      <label for="filterStatus" class="text-sm font-medium text-gray-700 mb-1"
+        >Estado:</label
+      >
+      <select
+        id="filterStatus"
+        [(ngModel)]="filtroEstado"
+        (change)="aplicarFiltros()"
+        class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        <option value="todos">Todos</option>
+        <option value="presente">Presentes</option>
+        <option value="ausente">Ausentes</option>
+      </select>
+    </div>
+
+    <div class="flex items-end">
+      <button
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="flex flex-wrap gap-3 mb-6">
+    <button
+      (click)="exportarExcel()"
+      class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+      [disabled]="asistenciasFiltradas.length === 0"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 mr-2"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      Exportar a Excel
+    </button>
+
+    <button
+      (click)="exportarCSV()"
+      class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      [disabled]="asistenciasFiltradas.length === 0"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 mr-2"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+        />
+      </svg>
+      Exportar a CSV
+    </button>
+
+    <button
+      (click)="exportarPDF()"
+      class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+      [disabled]="asistenciasFiltradas.length === 0"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 mr-2"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+        />
+      </svg>
+      Exportar a PDF
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-gray-50 rounded-lg p-4 shadow-sm text-center">
+      <span class="block text-2xl font-bold text-indigo-600">{{
+        contarPresentes()
+      }}</span>
+      <span class="text-gray-600 text-sm">Presentes</span>
+    </div>
+    <div class="bg-gray-50 rounded-lg p-4 shadow-sm text-center">
+      <span class="block text-2xl font-bold text-indigo-600">{{
+        contarAusentes()
+      }}</span>
+      <span class="text-gray-600 text-sm">Ausentes</span>
+    </div>
+    <div class="bg-gray-50 rounded-lg p-4 shadow-sm text-center">
+      <span class="block text-2xl font-bold text-indigo-600">{{
+        asistenciasFiltradas.length
+      }}</span>
+      <span class="text-gray-600 text-sm">Total</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table
+      class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm"
+      *ngIf="asistenciasFiltradas.length > 0"
+    >
+      <thead class="bg-indigo-600 text-white">
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-sm font-medium cursor-pointer hover:bg-indigo-700 transition-colors duration-200"
+            (click)="ordenarPor('alumno')"
+          >
+            Alumno
+            <span class="ml-1" *ngIf="ordenColumna === 'alumno'">
+              {{ ordenAscendente ? "↑" : "↓" }}
+            </span>
+          </th>
+          <th
+            class="px-6 py-3 text-left text-sm font-medium cursor-pointer hover:bg-indigo-700 transition-colors duration-200"
+            (click)="ordenarPor('fecha')"
+          >
+            Fecha
+            <span class="ml-1" *ngIf="ordenColumna === 'fecha'">
+              {{ ordenAscendente ? "↑" : "↓" }}
+            </span>
+          </th>
+          <th
+            class="px-6 py-3 text-left text-sm font-medium cursor-pointer hover:bg-indigo-700 transition-colors duration-200"
+            (click)="ordenarPor('asistio')"
+          >
+            Estado
+            <span class="ml-1" *ngIf="ordenColumna === 'asistio'">
+              {{ ordenAscendente ? "↑" : "↓" }}
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr
+          *ngFor="let asistencia of asistenciasFiltradas"
+          class="hover:bg-gray-50 transition-colors duration-150"
+        >
+          <td class="px-6 py-4 text-sm text-gray-900">
+            {{ asistencia.alumno }}
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-900">
+            {{ formatearFecha(asistencia.fecha) }}
+          </td>
+          <td class="px-6 py-4 text-sm">
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              [ngClass]="
+                asistencia.asistio
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              "
+            >
+              {{ asistencia.asistio ? "Presente" : "Ausente" }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div
+      class="bg-gray-50 rounded-lg p-8 text-center"
+      *ngIf="asistenciasFiltradas.length === 0"
+    >
+      <div class="text-4xl mb-4">📋</div>
+      <h3 class="text-lg font-medium text-gray-900 mb-1">
+        No hay registros de asistencia
+      </h3>
+      <p class="text-gray-500">
+        No se encontraron registros que coincidan con los filtros aplicados.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,16 @@
-// alumnos.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, type OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { AlumnoXMateria } from '../../../interfaces/profesorMaterias';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import type {
+  AlumnoXMateria,
+  Calificar,
+  registrarAsistencia,
+  RegistrarParticipacion,
+} from '../../../interfaces/profesorMaterias';
 import { ProfesorService } from '../../../services/profesor/profesor.service';
 import { MessageService } from 'primeng/api';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Router } from 'lucide-angular';
 import {
   BookIcon,
   UserIcon,
@@ -30,7 +34,6 @@ import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
-import { Calificar } from '../../../interfaces/profesorMaterias';
 
 interface GradeForm {
   ser: number | null;
@@ -41,14 +44,11 @@ interface GradeForm {
 
 interface AttendanceForm {
   date: Date | null;
-  status: string | null;
-  observation: string;
+  isPresent: boolean;
 }
 
 interface ParticipationForm {
   date: Date | null;
-  type: string | null;
-  points: number | null;
   comments: string;
 }
 
@@ -71,6 +71,7 @@ interface ParticipationForm {
     DropdownModule,
     CheckboxModule,
     TextareaModule,
+    InputTextModule,
   ],
   providers: [MessageService],
   templateUrl: './alumnos.component.html',
@@ -80,18 +81,18 @@ export class AlumnosComponent implements OnInit {
   materiaId!: number;
   alumnos: AlumnoXMateria[] = [];
   filteredAlumnos: AlumnoXMateria[] = [];
-  loading: boolean = true;
+  loading = true;
   error: string | null = null;
-  searchTerm: string = '';
-
+  searchTerm = '';
+  public today: Date = new Date();
   // Dialog controls
-  displayGradeDialog: boolean = false;
-  displayAttendanceDialog: boolean = false;
-  displayParticipationDialog: boolean = false;
+  displayGradeDialog = false;
+  displayAttendanceDialog = false;
+  displayParticipationDialog = false;
   selectedStudent: AlumnoXMateria | null = null;
-  submittingGrades: boolean = false;
-  submittingAttendance: boolean = false;
-  submittingParticipation: boolean = false;
+  submittingGrades = false;
+  submittingAttendance = false;
+  submittingParticipation = false;
 
   // Form models
   gradeForm: GradeForm = {
@@ -103,32 +104,13 @@ export class AlumnosComponent implements OnInit {
 
   attendanceForm: AttendanceForm = {
     date: null,
-    status: null,
-    observation: '',
+    isPresent: false,
   };
 
   participationForm: ParticipationForm = {
     date: null,
-    type: null,
-    points: null,
     comments: '',
   };
-
-  // Dropdown options
-  attendanceStatusOptions = [
-    { label: 'Presente', value: 'present' },
-    { label: 'Ausente', value: 'absent' },
-    { label: 'Tardanza', value: 'late' },
-    { label: 'Justificado', value: 'excused' },
-  ];
-
-  participationTypeOptions = [
-    { label: 'Pregunta', value: 'question' },
-    { label: 'Respuesta', value: 'answer' },
-    { label: 'Presentación', value: 'presentation' },
-    { label: 'Debate', value: 'debate' },
-    { label: 'Otro', value: 'other' },
-  ];
 
   // Icon references
   BookIcon = BookIcon;
@@ -157,14 +139,45 @@ export class AlumnosComponent implements OnInit {
     decidir: 0,
   };
 
+  asistencia: registrarAsistencia = {
+    alumno_id: this.selectedStudent?.id || 0,
+    gestion_curso_id: 0,
+    materia_id: 0,
+    fecha: '',
+    asistio: false,
+  };
+
+  participacion: RegistrarParticipacion = {
+    alumno_id: this.selectedStudent?.id || 0,
+    materia_id: 0,
+    gestion_curso_id: 0,
+    fecha: '',
+    descripcion: '',
+  };
+
   ngOnInit(): void {
     this.materiaId = Number(this.route.snapshot.paramMap.get('id'));
     this.calificacion.gestion_curso = Number(
       this.route.snapshot.paramMap.get('gestion_curso')
     );
     this.calificacion.materia_id = Number(
-      this.route.snapshot.paramMap.get('materia_id')
+      this.route.snapshot.paramMap.get('materia')
     );
+
+    //ASISTENCIA
+    this.asistencia.gestion_curso_id = Number(
+      this.route.snapshot.paramMap.get('gestion_curso')
+    );
+
+    this.asistencia.materia_id = this.calificacion.materia_id;
+
+    //PARTICIPACION
+    this.participacion.gestion_curso_id = Number(
+      this.route.snapshot.paramMap.get('gestion_curso')
+    );
+
+    this.participacion.materia_id = this.calificacion.materia_id;
+
     this.loadAlumnos();
   }
 
@@ -173,12 +186,10 @@ export class AlumnosComponent implements OnInit {
     this.profesorService.getAlumnoXMaterias(this.materiaId).subscribe({
       next: (data) => {
         this.alumnos = data;
-        console.log(data);
         this.filteredAlumnos = [...data];
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error:', err);
         this.error = 'Error al cargar los alumnos';
         this.loading = false;
         this.messageService.add({
@@ -283,7 +294,6 @@ export class AlumnosComponent implements OnInit {
           summary: 'Error',
           detail: 'No se pudo registrar la calificación',
         });
-        console.error('Error al calificar:', err);
       },
     });
   }
@@ -320,8 +330,7 @@ export class AlumnosComponent implements OnInit {
   resetAttendanceForm(): void {
     this.attendanceForm = {
       date: new Date(),
-      status: null,
-      observation: '',
+      isPresent: false,
     };
   }
 
@@ -330,37 +339,51 @@ export class AlumnosComponent implements OnInit {
       this.messageService.add({
         severity: 'warn',
         summary: 'Formulario incompleto',
-        detail: 'Por favor complete la fecha y el estado de asistencia',
+        detail: 'Por favor seleccione una fecha',
       });
       return;
     }
 
     this.submittingAttendance = true;
 
-    // Simulate API call
-    setTimeout(() => {
+    if (!this.selectedStudent) {
       this.submittingAttendance = false;
-      this.displayAttendanceDialog = false;
+      return;
+    }
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Asistencia registrada',
-        detail: `La asistencia para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} ha sido registrada exitosamente`,
-      });
+    const asistencia: registrarAsistencia = {
+      alumno_id: this.selectedStudent.id,
+      gestion_curso_id: this.asistencia.gestion_curso_id,
+      materia_id: this.asistencia.materia_id,
+      fecha: this.attendanceForm.date
+        ? this.attendanceForm.date.toISOString().split('T')[0]
+        : '',
+      asistio: this.attendanceForm.isPresent,
+    };
 
-      // Here you would normally call your API service to save the attendance
-      console.log(
-        'Attendance submitted for student:',
-        this.selectedStudent?.id
-      );
-      console.log('Attendance:', this.attendanceForm);
-    }, 1000);
+    this.profesorService.registrarAsistencia(asistencia).subscribe({
+      next: () => {
+        this.submittingAttendance = false;
+        this.displayAttendanceDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Asistencia registrada',
+          detail: `La asistencia para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} ha sido registrada exitosamente`,
+        });
+      },
+      error: (err) => {
+        this.submittingAttendance = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo registrar la asistencia',
+        });
+      },
+    });
   }
 
   isAttendanceFormValid(): boolean {
-    return (
-      this.attendanceForm.date !== null && this.attendanceForm.status !== null
-    );
+    return this.attendanceForm.date !== null;
   }
 
   // Participation Dialog Methods
@@ -373,8 +396,6 @@ export class AlumnosComponent implements OnInit {
   resetParticipationForm(): void {
     this.participationForm = {
       date: new Date(),
-      type: null,
-      points: 5,
       comments: '',
     };
   }
@@ -384,40 +405,53 @@ export class AlumnosComponent implements OnInit {
       this.messageService.add({
         severity: 'warn',
         summary: 'Formulario incompleto',
-        detail: 'Por favor complete la fecha, tipo y puntos de participación',
+        detail: 'Por favor complete la fecha y la descripción',
       });
       return;
     }
 
     this.submittingParticipation = true;
 
-    // Simulate API call
-    setTimeout(() => {
+    if (!this.selectedStudent) {
       this.submittingParticipation = false;
-      this.displayParticipationDialog = false;
+      return;
+    }
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Participación registrada',
-        detail: `La participación para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} ha sido registrada exitosamente`,
-      });
+    const participacion: RegistrarParticipacion = {
+      alumno_id: this.selectedStudent.id,
+      materia_id: this.participacion.materia_id,
+      gestion_curso_id: this.participacion.gestion_curso_id,
+      fecha: this.participationForm.date
+        ? this.participationForm.date.toISOString().split('T')[0]
+        : '',
+      descripcion: this.participationForm.comments,
+    };
 
-      // Here you would normally call your API service to save the participation
-      console.log(
-        'Participation submitted for student:',
-        this.selectedStudent?.id
-      );
-      console.log('Participation:', this.participationForm);
-    }, 1000);
+    this.profesorService.registrarParticipacion(participacion).subscribe({
+      next: () => {
+        this.submittingParticipation = false;
+        this.displayParticipationDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Participación registrada',
+          detail: `La participación para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} ha sido registrada exitosamente`,
+        });
+      },
+      error: () => {
+        this.submittingParticipation = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo registrar la participación',
+        });
+      },
+    });
   }
 
   isParticipationFormValid(): boolean {
     return (
       this.participationForm.date !== null &&
-      this.participationForm.type !== null &&
-      this.participationForm.points !== null &&
-      this.participationForm.points >= 0 &&
-      this.participationForm.points <= 10
+      this.participationForm.comments.trim().length > 0
     );
   }
 }

@@ -17,10 +17,7 @@
         <div
           class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
         >
-          <i-lucide
-            [img]="SearchIcon"
-            class="w-5 h-5 text-slate-400"
-          ></i-lucide>
+          <i-lucide class="w-5 h-5 text-slate-400"></i-lucide>
         </div>
         <input
           type="text"
@@ -203,7 +200,7 @@
             (click)="openParticipationDialog(alumno)"
           >
             <i-lucide [img]="MessageSquareIcon" class="w-4 h-4 mr-2"></i-lucide>
-            <span>Asignar participación</span>
+            <span>Registrar participación</span>
           </button>
         </div>
       </div>
@@ -330,7 +327,7 @@
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
-  header="Asignar Asistencia"
+  header="Registrar Asistencia"
   [closeOnEscape]="true"
   [dismissableMask]="true"
 >
@@ -353,42 +350,49 @@
             [showIcon]="true"
             dateFormat="dd/mm/yy"
             [readonlyInput]="true"
+            [maxDate]="today"
             styleClass="w-full"
             inputId="attendance-date"
           ></p-calendar>
         </div>
       </div>
-      <!-- Status -->
+      <!-- Attendance Checkbox -->
       <div class="grid grid-cols-3 items-center">
-        <label for="attendance-status" class="text-slate-700 font-medium"
-          >Estado:</label
+        <label for="attendance-present" class="text-slate-700 font-medium"
+          >Asistencia:</label
         >
         <div class="col-span-2">
-          <p-dropdown
-            [(ngModel)]="attendanceForm.status"
-            [options]="attendanceStatusOptions"
-            placeholder="Seleccione un estado"
-            styleClass="w-full"
-            inputId="attendance-status"
-          ></p-dropdown>
+          <div
+            class="flex items-center space-x-3 p-3 border border-slate-200 rounded-lg bg-slate-50"
+          >
+            <p-checkbox
+              [(ngModel)]="attendanceForm.isPresent"
+              [binary]="true"
+              inputId="attendance-present"
+            ></p-checkbox>
+            <label
+              for="attendance-present"
+              class="text-slate-700 cursor-pointer"
+            >
+              El alumno estuvo presente
+            </label>
+          </div>
         </div>
       </div>
-      <!-- Observation -->
-      <div class="grid grid-cols-3 items-start">
-        <label
-          for="attendance-observation"
-          class="text-slate-700 font-medium pt-2"
-          >Observación:</label
-        >
+      <!-- Status Indicator -->
+      <div class="grid grid-cols-3 items-center">
+        <span class="text-slate-700 font-medium">Estado:</span>
         <div class="col-span-2">
-          <textarea
-            pInputTextarea
-            [(ngModel)]="attendanceForm.observation"
-            rows="3"
-            class="w-full"
-            placeholder="Observaciones (opcional)"
-            id="attendance-observation"
-          ></textarea>
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+            [ngClass]="
+              attendanceForm.isPresent
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+            "
+          >
+            {{ attendanceForm.isPresent ? "Presente" : "Ausente" }}
+          </span>
         </div>
       </div>
     </div>
@@ -412,13 +416,14 @@
 </p-dialog>
 
 <!-- Participation Dialog -->
+<!-- Participation Dialog -->
 <p-dialog
   [(visible)]="displayParticipationDialog"
   [style]="{ width: '450px' }"
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
-  header="Asignar Participación"
+  header="Registrar Participación"
   [closeOnEscape]="true"
   [dismissableMask]="true"
 >
@@ -430,11 +435,11 @@
       <p class="text-sm text-slate-500">{{ selectedStudent.ci }}</p>
     </div>
     <div class="space-y-4">
-      <!-- Date -->
+      <!-- Fecha -->
       <div class="grid grid-cols-3 items-center">
-        <label for="participation-date" class="text-slate-700 font-medium"
-          >Fecha:</label
-        >
+        <label for="participation-date" class="text-slate-700 font-medium">
+          Fecha:
+        </label>
         <div class="col-span-2">
           <p-calendar
             [(ngModel)]="participationForm.date"
@@ -446,53 +451,21 @@
           ></p-calendar>
         </div>
       </div>
-      <!-- Type -->
-      <div class="grid grid-cols-3 items-center">
-        <label for="participation-type" class="text-slate-700 font-medium"
-          >Tipo:</label
-        >
-        <div class="col-span-2">
-          <p-dropdown
-            [(ngModel)]="participationForm.type"
-            [options]="participationTypeOptions"
-            placeholder="Seleccione un tipo"
-            styleClass="w-full"
-            inputId="participation-type"
-          ></p-dropdown>
-        </div>
-      </div>
-      <!-- Points -->
-      <div class="grid grid-cols-3 items-center">
-        <label for="participation-points" class="text-slate-700 font-medium"
-          >Puntos:</label
-        >
-        <div class="col-span-2">
-          <p-inputNumber
-            [(ngModel)]="participationForm.points"
-            [showButtons]="true"
-            [min]="0"
-            [max]="10"
-            [step]="1"
-            placeholder="0-10"
-            styleClass="w-full"
-            inputId="participation-points"
-          ></p-inputNumber>
-        </div>
-      </div>
-      <!-- Comments -->
+      <!-- Descripción -->
       <div class="grid grid-cols-3 items-start">
         <label
           for="participation-comments"
           class="text-slate-700 font-medium pt-2"
-          >Comentarios:</label
         >
+          Descripción:
+        </label>
         <div class="col-span-2">
           <textarea
             pInputTextarea
             [(ngModel)]="participationForm.comments"
             rows="3"
             class="w-full"
-            placeholder="Comentarios (opcional)"
+            placeholder="Describe la participación"
             id="participation-comments"
           ></textarea>
         </div>

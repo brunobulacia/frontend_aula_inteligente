@@ -53,3 +53,19 @@ export interface verAsistencias {
   fecha: string;
   asistio: boolean;
 }
+
+export interface registrarAsistencia {
+  alumno_id: number;
+  materia_id: number;
+  gestion_curso_id: number;
+  fecha: string;
+  asistio: boolean;
+}
+
+export interface RegistrarParticipacion {
+  alumno_id: number;
+  materia_id: number;
+  gestion_curso_id: number;
+  fecha: string;
+  descripcion: string;
+}

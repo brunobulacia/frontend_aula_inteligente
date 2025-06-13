@@ -140,8 +140,8 @@ export class AsignacionesComponent {
   cargarDatos() {
     this.obtenerMaterias();
     this.obtenerGestionCursos();
-    this.obtenerHorarios();
-    this.obtenerDiasHorarios();
+    // this.obtenerHorarios();
+    // this.obtenerDiasHorarios();
     this.obtenerCursos();
     this.obtenerGestiones();
     this.obtenerProfesores();
@@ -168,7 +168,7 @@ export class AsignacionesComponent {
     });
   }
 
-  obtenerHorarios() {
+  /* obtenerHorarios() {
     this.horariosService.getHorarios().subscribe({
       next: (data: Horarios[]) => {
         this.horarios = data;
@@ -177,9 +177,9 @@ export class AsignacionesComponent {
       },
       error: (err) => console.error('Error al obtener horarios', err),
     });
-  }
+  } */
 
-  obtenerDiasHorarios() {
+  /* obtenerDiasHorarios() {
     if (typeof this.horariosService['getDiasHorarios'] === 'function') {
       this.horariosService['getDiasHorarios']().subscribe({
         next: (data: DiaHorarioAPI[]) => {
@@ -191,9 +191,9 @@ export class AsignacionesComponent {
           console.error('Error al obtener diasHorarios', err),
       });
     }
-  }
+  } */
 
-  actualizarDiasHorariosTable() {
+  /* actualizarDiasHorariosTable() {
     this.diasHorariosTable = this.diasHorarios.map((dh) => {
       const diaObj = DIAS.find((d) => d.id === dh.dia);
       const horarioObj = this.horarios.find((h) => h.id === dh.horario);
@@ -211,7 +211,7 @@ export class AsignacionesComponent {
       label: `${dh.dia_nombre} ${dh.horario_inicio} - ${dh.horario_fin}`,
       value: dh.id,
     }));
-  }
+  } */
 
   obtenerCursos() {
     this.cursosService.getCursos().subscribe({
@@ -237,6 +237,7 @@ export class AsignacionesComponent {
   obtenerAsignaciones() {
     this.asignacionesService.getAsignaciones().subscribe({
       next: (data) => {
+        console.log('Asignaciones obtenidas:', data);
         this.asignaciones = data.map((a) => this.mapAsignacionToView(a));
         this.aplicarFiltros();
       },
@@ -244,12 +245,12 @@ export class AsignacionesComponent {
     });
   }
 
-  getDiaHorarioLabel(diaHorarioId: number): string {
+  /* getDiaHorarioLabel(diaHorarioId: number): string {
     const dh = this.diasHorariosTable.find((d) => d.id === diaHorarioId);
     return dh
       ? `${dh.dia_nombre} ${dh.horario_inicio} - ${dh.horario_fin}`
       : '';
-  }
+  } */
 
   mapAsignacionToView(a: any): AsignacionesView {
     const materia = this.materias.find((m) => m.id === a.materia);
@@ -267,10 +268,12 @@ export class AsignacionesComponent {
       ? `${profesor.nombre ?? ''} ${profesor.apellidos ?? ''}`.trim()
       : '';
 
-    const horariosTexto = (a.dia_horarios || [])
-      .map((id: number) => this.getDiaHorarioLabel(id))
-      .filter((x: string) => x)
-      .join(', ');
+    const diaHorarios = this.diasHorariosTable.find((d) =>
+      a.dia_horarios.includes(d.id)
+    );
+    if (!diaHorarios) {
+      console.warn(`No se encontró diaHorario para asignación con ID ${a.id}`);
+    }
 
     return {
       id: a.id,
@@ -278,7 +281,14 @@ export class AsignacionesComponent {
       curso_nombre,
       profesor_nombre,
       gestion_periodo,
-      dia_horarios: horariosTexto,
+      dia_horarios: a.dia_horarios.map((dh: number) => {
+        const diaHorario = this.diasHorariosTable.find((d) => d.id === dh);
+        return diaHorario
+          ? `${(diaHorario as any).dia_nombre ?? ''} ${
+              (diaHorario as any).horario_inicio ?? ''
+            } - ${(diaHorario as any).horario_fin ?? ''}`
+          : '';
+      }),
     };
   }
 

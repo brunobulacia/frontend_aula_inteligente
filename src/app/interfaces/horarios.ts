@@ -12,9 +12,9 @@ export interface DiaHorarioAPI {
 
 export interface DiaHorarioTable {
   id: number;
-  dia_nombre: string;
-  horario_inicio: string;
-  horario_fin: string;
+  dia: string;
+  hora_inicio: string;
+  hora_fin: string;
 }
 
 export const DIAS = [
