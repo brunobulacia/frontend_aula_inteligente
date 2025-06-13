@@ -1,0 +1,520 @@
+<!-- alumnos.component.html -->
+<div class="bg-slate-100 min-h-screen p-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-800">Lista de Estudiantes</h1>
+      <p class="text-slate-600 mt-1">
+        Estudiantes inscritos en la materia
+        <span *ngIf="!loading && alumnos.length > 0" class="font-medium">
+          ({{ alumnos.length }} estudiantes)
+        </span>
+      </p>
+    </div>
+
+    <!-- Search bar -->
+    <div class="mb-8">
+      <div class="relative max-w-md">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <i-lucide
+            [img]="SearchIcon"
+            class="w-5 h-5 text-slate-400"
+          ></i-lucide>
+        </div>
+        <input
+          type="text"
+          class="block w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+          placeholder="Buscar estudiantes..."
+          (input)="filterAlumnos($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="flex justify-center items-center h-64">
+      <p-progressSpinner
+        styleClass="w-12 h-12"
+        strokeWidth="4"
+        [style]="{ stroke: '#334155' }"
+      ></p-progressSpinner>
+    </div>
+
+    <!-- Error message -->
+    <div
+      *ngIf="error && !loading"
+      class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 mb-6"
+    >
+      <div class="flex items-center">
+        <span class="mr-2">⚠️</span>
+        <span>{{ error }}</span>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div
+      *ngIf="!loading && !error && alumnos.length === 0"
+      class="p-8 text-center border rounded-lg bg-white shadow-sm"
+    >
+      <h3 class="text-lg font-medium text-slate-700">
+        No hay estudiantes inscritos
+      </h3>
+      <p class="text-slate-500 mt-2">
+        No se encontraron estudiantes para esta materia
+      </p>
+    </div>
+
+    <!-- No search results -->
+    <div
+      *ngIf="
+        !loading && !error && alumnos.length > 0 && filteredAlumnos.length === 0
+      "
+      class="p-8 text-center border rounded-lg bg-white shadow-sm"
+    >
+      <h3 class="text-lg font-medium text-slate-700">
+        No se encontraron resultados
+      </h3>
+      <p class="text-slate-500 mt-2">
+        No hay estudiantes que coincidan con "{{ searchTerm }}"
+      </p>
+    </div>
+
+    <!-- Student cards -->
+    <div
+      *ngIf="!loading && filteredAlumnos.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      <div
+        *ngFor="let alumno of filteredAlumnos"
+        class="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200 flex flex-col"
+      >
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-200">
+          <div class="flex items-center">
+            <div
+              [class]="
+                'flex items-center justify-center w-12 h-12 rounded-lg mr-4 font-bold ' +
+                getAvatarColor(alumno.id)
+              "
+            >
+              {{ getInitials(alumno.nombre, alumno.apellidos) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg font-semibold text-slate-800 truncate">
+                {{ alumno.nombre }} {{ alumno.apellidos }}
+              </h3>
+              <p class="text-sm text-slate-500">{{ alumno.tipo_usuario }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div
+          class="p-5 space-y-4 flex-1"
+          style="height: 220px; overflow-y: auto"
+        >
+          <!-- Email -->
+          <div class="flex items-start">
+            <div class="bg-slate-100 p-2 rounded-lg mr-3">
+              <i-lucide
+                [img]="MailIcon"
+                class="w-5 h-5 text-slate-700"
+              ></i-lucide>
+            </div>
+            <div>
+              <p
+                class="text-xs uppercase tracking-wider font-medium text-slate-500"
+              >
+                Email
+              </p>
+              <p class="text-slate-800">{{ alumno.email }}</p>
+            </div>
+          </div>
+          <!-- CI -->
+          <div class="flex items-start">
+            <div class="bg-slate-100 p-2 rounded-lg mr-3">
+              <i-lucide
+                [img]="IdCardIcon"
+                class="w-5 h-5 text-slate-700"
+              ></i-lucide>
+            </div>
+            <div>
+              <p
+                class="text-xs uppercase tracking-wider font-medium text-slate-500"
+              >
+                CI
+              </p>
+              <p class="text-slate-800">{{ alumno.ci }}</p>
+            </div>
+          </div>
+          <!-- Address -->
+          <div class="flex items-start">
+            <div class="bg-slate-100 p-2 rounded-lg mr-3">
+              <i-lucide
+                [img]="MapPinIcon"
+                class="w-5 h-5 text-slate-700"
+              ></i-lucide>
+            </div>
+            <div>
+              <p
+                class="text-xs uppercase tracking-wider font-medium text-slate-500"
+              >
+                Dirección
+              </p>
+              <p class="text-slate-800">
+                {{ alumno.direccion.ciudad }}, {{ alumno.direccion.zona }}
+              </p>
+              <p class="text-slate-600">
+                {{ alumno.direccion.calle }} {{ alumno.direccion.numero }}
+              </p>
+              <p
+                *ngIf="alumno.direccion.referencia"
+                class="text-sm text-slate-500 mt-1 italic"
+              >
+                {{ alumno.direccion.referencia }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer with buttons -->
+        <div class="px-5 py-4 bg-slate-50 border-t border-slate-200 space-y-2">
+          <!-- Grades button -->
+          <button
+            class="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center"
+            (click)="openGradeDialog(alumno)"
+          >
+            <span>Asignar notas</span>
+          </button>
+          <!-- Attendance button -->
+          <button
+            class="w-full py-2 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors duration-200 flex items-center justify-center"
+            (click)="openAttendanceDialog(alumno)"
+          >
+            <i-lucide
+              [img]="ClipboardCheckIcon"
+              class="w-4 h-4 mr-2"
+            ></i-lucide>
+            <span>Asignar asistencia</span>
+          </button>
+          <!-- Participation button -->
+          <button
+            class="w-full py-2 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-colors duration-200 flex items-center justify-center"
+            (click)="openParticipationDialog(alumno)"
+          >
+            <i-lucide [img]="MessageSquareIcon" class="w-4 h-4 mr-2"></i-lucide>
+            <span>Asignar participación</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grade Assignment Dialog -->
+<p-dialog
+  [(visible)]="displayGradeDialog"
+  [style]="{ width: '450px' }"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Asignar Calificaciones"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+>
+  <div *ngIf="selectedStudent" class="p-2">
+    <div class="mb-4 pb-4 border-b border-slate-200">
+      <h3 class="text-lg font-medium text-slate-800">
+        {{ selectedStudent.nombre }} {{ selectedStudent.apellidos }}
+      </h3>
+      <p class="text-sm text-slate-500">{{ selectedStudent.ci }}</p>
+    </div>
+    <div class="space-y-4">
+      <!-- Ser -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="ser" class="text-slate-700 font-medium">Ser:</label>
+        <div class="col-span-2">
+          <p-inputNumber
+            [(ngModel)]="gradeForm.ser"
+            [showButtons]="true"
+            [min]="0"
+            [max]="25"
+            [step]="1"
+            placeholder="0-25"
+            styleClass="w-full"
+            inputId="ser"
+          ></p-inputNumber>
+        </div>
+      </div>
+      <!-- Saber -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="saber" class="text-slate-700 font-medium">Saber:</label>
+        <div class="col-span-2">
+          <p-inputNumber
+            [(ngModel)]="gradeForm.saber"
+            [showButtons]="true"
+            [min]="0"
+            [max]="25"
+            [step]="1"
+            placeholder="0-25"
+            styleClass="w-full"
+            inputId="saber"
+          ></p-inputNumber>
+        </div>
+      </div>
+      <!-- Hacer -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="hacer" class="text-slate-700 font-medium">Hacer:</label>
+        <div class="col-span-2">
+          <p-inputNumber
+            [(ngModel)]="gradeForm.hacer"
+            [showButtons]="true"
+            [min]="0"
+            [max]="25"
+            [step]="1"
+            placeholder="0-25"
+            styleClass="w-full"
+            inputId="hacer"
+          ></p-inputNumber>
+        </div>
+      </div>
+      <!-- Decidir -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="decidir" class="text-slate-700 font-medium">Decidir:</label>
+        <div class="col-span-2">
+          <p-inputNumber
+            [(ngModel)]="gradeForm.decidir"
+            [showButtons]="true"
+            [min]="0"
+            [max]="25"
+            [step]="1"
+            placeholder="0-25"
+            styleClass="w-full"
+            inputId="decidir"
+          ></p-inputNumber>
+        </div>
+      </div>
+      <!-- Total (calculated) -->
+      <div class="grid grid-cols-3 items-center pt-2 border-t border-slate-200">
+        <label class="text-slate-700 font-bold">Promedio:</label>
+        <div class="col-span-2">
+          <span class="text-xl font-bold text-slate-800">{{
+            calculateTotal()
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors mr-2"
+      (click)="displayGradeDialog = false"
+    >
+      Cancelar
+    </button>
+    <button
+      class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+      (click)="submitGrades()"
+      [disabled]="submittingGrades || !isGradeFormValid()"
+    >
+      <span *ngIf="!submittingGrades">Guardar</span>
+      <span *ngIf="submittingGrades">Guardando...</span>
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!-- Attendance Dialog -->
+<p-dialog
+  [(visible)]="displayAttendanceDialog"
+  [style]="{ width: '450px' }"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Asignar Asistencia"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+>
+  <div *ngIf="selectedStudent" class="p-2">
+    <div class="mb-4 pb-4 border-b border-slate-200">
+      <h3 class="text-lg font-medium text-slate-800">
+        {{ selectedStudent.nombre }} {{ selectedStudent.apellidos }}
+      </h3>
+      <p class="text-sm text-slate-500">{{ selectedStudent.ci }}</p>
+    </div>
+    <div class="space-y-4">
+      <!-- Date -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="attendance-date" class="text-slate-700 font-medium"
+          >Fecha:</label
+        >
+        <div class="col-span-2">
+          <p-calendar
+            [(ngModel)]="attendanceForm.date"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [readonlyInput]="true"
+            styleClass="w-full"
+            inputId="attendance-date"
+          ></p-calendar>
+        </div>
+      </div>
+      <!-- Status -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="attendance-status" class="text-slate-700 font-medium"
+          >Estado:</label
+        >
+        <div class="col-span-2">
+          <p-dropdown
+            [(ngModel)]="attendanceForm.status"
+            [options]="attendanceStatusOptions"
+            placeholder="Seleccione un estado"
+            styleClass="w-full"
+            inputId="attendance-status"
+          ></p-dropdown>
+        </div>
+      </div>
+      <!-- Observation -->
+      <div class="grid grid-cols-3 items-start">
+        <label
+          for="attendance-observation"
+          class="text-slate-700 font-medium pt-2"
+          >Observación:</label
+        >
+        <div class="col-span-2">
+          <textarea
+            pInputTextarea
+            [(ngModel)]="attendanceForm.observation"
+            rows="3"
+            class="w-full"
+            placeholder="Observaciones (opcional)"
+            id="attendance-observation"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors mr-2"
+      (click)="displayAttendanceDialog = false"
+    >
+      Cancelar
+    </button>
+    <button
+      class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+      (click)="submitAttendance()"
+      [disabled]="submittingAttendance || !isAttendanceFormValid()"
+    >
+      <span *ngIf="!submittingAttendance">Guardar</span>
+      <span *ngIf="submittingAttendance">Guardando...</span>
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!-- Participation Dialog -->
+<p-dialog
+  [(visible)]="displayParticipationDialog"
+  [style]="{ width: '450px' }"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Asignar Participación"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+>
+  <div *ngIf="selectedStudent" class="p-2">
+    <div class="mb-4 pb-4 border-b border-slate-200">
+      <h3 class="text-lg font-medium text-slate-800">
+        {{ selectedStudent.nombre }} {{ selectedStudent.apellidos }}
+      </h3>
+      <p class="text-sm text-slate-500">{{ selectedStudent.ci }}</p>
+    </div>
+    <div class="space-y-4">
+      <!-- Date -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="participation-date" class="text-slate-700 font-medium"
+          >Fecha:</label
+        >
+        <div class="col-span-2">
+          <p-calendar
+            [(ngModel)]="participationForm.date"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [readonlyInput]="true"
+            styleClass="w-full"
+            inputId="participation-date"
+          ></p-calendar>
+        </div>
+      </div>
+      <!-- Type -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="participation-type" class="text-slate-700 font-medium"
+          >Tipo:</label
+        >
+        <div class="col-span-2">
+          <p-dropdown
+            [(ngModel)]="participationForm.type"
+            [options]="participationTypeOptions"
+            placeholder="Seleccione un tipo"
+            styleClass="w-full"
+            inputId="participation-type"
+          ></p-dropdown>
+        </div>
+      </div>
+      <!-- Points -->
+      <div class="grid grid-cols-3 items-center">
+        <label for="participation-points" class="text-slate-700 font-medium"
+          >Puntos:</label
+        >
+        <div class="col-span-2">
+          <p-inputNumber
+            [(ngModel)]="participationForm.points"
+            [showButtons]="true"
+            [min]="0"
+            [max]="10"
+            [step]="1"
+            placeholder="0-10"
+            styleClass="w-full"
+            inputId="participation-points"
+          ></p-inputNumber>
+        </div>
+      </div>
+      <!-- Comments -->
+      <div class="grid grid-cols-3 items-start">
+        <label
+          for="participation-comments"
+          class="text-slate-700 font-medium pt-2"
+          >Comentarios:</label
+        >
+        <div class="col-span-2">
+          <textarea
+            pInputTextarea
+            [(ngModel)]="participationForm.comments"
+            rows="3"
+            class="w-full"
+            placeholder="Comentarios (opcional)"
+            id="participation-comments"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors mr-2"
+      (click)="displayParticipationDialog = false"
+    >
+      Cancelar
+    </button>
+    <button
+      class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+      (click)="submitParticipation()"
+      [disabled]="submittingParticipation || !isParticipationFormValid()"
+    >
+      <span *ngIf="!submittingParticipation">Guardar</span>
+      <span *ngIf="submittingParticipation">Guardando...</span>
+    </button>
+  </ng-template>
+</p-dialog>
+
+<p-toast position="top-right"></p-toast>

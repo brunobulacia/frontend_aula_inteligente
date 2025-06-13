@@ -12,7 +12,7 @@ import {
 } from './guards/role-guard/role.guard';
 // TODO: Update the path below if the file exists elsewhere, or create the file if missing.
 
-import { UsuariosComponent } from './admin/components/inscripciones/usuarios/usuarios.component';
+import { UsuariosComponent } from './admin/components/usuarios/usuarios.component';
 import { AdminComponent } from './admin/components/admin/admin.component';
 import { CursosComponent } from './admin/components/cursos/cursos.component';
 import { HorariosComponent } from './admin/components/horarios/horarios.component';
@@ -22,12 +22,11 @@ import { HorarioDiaComponent } from './admin/components/horario-dia/horario-dia.
 import { AsignacionesComponent } from './admin/components/asignaciones/asignaciones.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MateriasProfComponent } from './profesor/components/materias/materias.component';
-import { NotasProfComponent } from './profesor/components/notas/notas.component';
 import { AsistenciasProfComponent } from './profesor/components/asistencias/asistencias.component';
 import { ParticipacionesProfComponent } from './profesor/components/participaciones/participaciones.component';
 import { InscripcionesComponent } from './admin/components/inscripciones/inscripciones.component';
 import { NotasAdminComponent } from './admin/components/notas/notas.component';
-
+import { AlumnosComponent } from './profesor/components/alumnos/alumnos.component';
 export const routes: Routes = [
   {
     path: 'login',
@@ -50,8 +49,8 @@ export const routes: Routes = [
             component: MateriasProfComponent,
           },
           {
-            path: 'notas',
-            component: NotasProfComponent,
+            path: 'alumnos/:id',
+            component: AlumnosComponent,
           },
           {
             path: 'asistencias',

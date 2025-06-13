@@ -1,11 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HorariosService } from '../../../services/horarios/horarios.service';
-import {
-  DiaHorarioAPI,
-  DiaHorarioTable,
-  Horarios,
-} from '../../../interfaces/horarios';
+import { DiaHorarioTable } from '../../../interfaces/horarios';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -14,9 +10,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { Toolbar } from 'primeng/toolbar';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
 import {
   LucideAngularModule,
   Trash,
@@ -29,27 +25,17 @@ import {
   Filter,
   X,
   Clock,
-  CalendarClock,
 } from 'lucide-angular';
 
-const DIA_HORARIO_VACIO: DiaHorarioAPI = {
+const DIA_HORARIO_VACIO: DiaHorarioTable = {
   id: 0,
-  dia: 0,
-  horario: 0,
+  dia: '',
+  hora_inicio: '',
+  hora_fin: '',
 };
 
-// Nueva interfaz para la vista de la tabla
-interface DiaHorarioView {
-  id: number;
-  dia: number;
-  dia_nombre: string;
-  horario: number;
-  horario_inicio: string;
-  horario_fin: string;
-}
-
 @Component({
-  selector: 'app-horario-dia',
+  selector: 'app-dia-horario',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -60,15 +46,14 @@ interface DiaHorarioView {
     ConfirmDialogModule,
     InputTextModule,
     ToastModule,
+    Toolbar,
     CardModule,
     DividerModule,
-    DropdownModule,
     LucideAngularModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './horario-dia.component.html',
   standalone: true,
-  styles: '',
 })
 export class HorarioDiaComponent {
   readonly TrashIcon = Trash;
@@ -82,10 +67,9 @@ export class HorarioDiaComponent {
   readonly XIcon = X;
   readonly ClockIcon = Clock;
 
-  diasHorarios: DiaHorarioAPI[] = [];
-  diasHorariosTable: DiaHorarioTable[] = [];
+  diasHorarios: DiaHorarioTable[] = [];
   diasHorariosFiltrados: DiaHorarioTable[] = [];
-  diaHorarioActual: DiaHorarioAPI = { id: 0, dia: 0, horario: 0 };
+  diaHorarioActual: DiaHorarioTable = { ...DIA_HORARIO_VACIO };
   diaHorarioDialog = false;
   submitted = false;
   first = 0;
@@ -95,13 +79,6 @@ export class HorarioDiaComponent {
   // Filtros
   searchTerm = '';
 
-  // Para selects
-  dias: { id: number; nombre: string }[] = [];
-  horarios: Horarios[] = [];
-  selectedDia: number | null = null;
-  selectedHorario: number | null = null;
-  selectedHorarioFin: Horarios | null = null;
-
   constructor(
     private horariosService: HorariosService,
     private confirmationService: ConfirmationService,
@@ -110,64 +87,37 @@ export class HorarioDiaComponent {
 
   ngOnInit(): void {
     this.obtenerDiasHorarios();
-    this.cargarDias();
-    this.cargarHorarios();
   }
 
   obtenerDiasHorarios(): void {
     this.horariosService.getDiasHorarios().subscribe({
-      next: (data) => {
-        this.diasHorarios = data;
-        this.diasHorariosTable = this.mapDiaHorarioToTable(data);
-        this.aplicarFiltros();
+      next: (diasHorarios) => {
+        console.log('Días-Horarios obtenidos:', diasHorarios);
       },
-      error: (err) => console.error('Error al obtener dia-horarios', err),
-    });
-  }
-
-  mapDiaHorarioToTable(data: DiaHorarioAPI[]): DiaHorarioTable[] {
-    return data.map((item) => {
-      const diaObj = this.dias.find((d) => d.id === item.dia);
-      const horarioObj = this.horarios.find((h) => h.id === item.horario);
-      return {
-        id: item.id,
-        dia_nombre: diaObj ? diaObj.nombre : '',
-        horario_inicio: horarioObj ? horarioObj.hora_inicio : '',
-        horario_fin: horarioObj ? horarioObj.hora_fin : '',
-      };
-    });
-  }
-
-  cargarDias(): void {
-    this.dias = this.horariosService.getDias();
-  }
-
-  cargarHorarios(): void {
-    this.horariosService.getHorarios().subscribe({
-      next: (data) => {
-        this.horarios = data;
-        // Actualizar la vista si ya hay datos cargados
-        if (this.diasHorarios.length > 0) {
-          this.diasHorariosTable = this.mapDiaHorarioToTable(this.diasHorarios);
-          this.aplicarFiltros();
-        }
+      error: (error) => {
+        console.error('Error al obtener los días-horarios:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar los días-horarios',
+          life: 3000,
+        });
       },
-      error: (err) => console.error('Error al obtener horarios', err),
     });
   }
 
   aplicarFiltros(): void {
-    let diasHorariosFiltrados = [...this.diasHorariosTable];
+    let filtrados = [...this.diasHorarios];
     if (this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
-      diasHorariosFiltrados = diasHorariosFiltrados.filter(
-        (item) =>
-          item.dia_nombre.toLowerCase().includes(termino) ||
-          item.horario_inicio.toLowerCase().includes(termino) ||
-          item.horario_fin.toLowerCase().includes(termino)
+      filtrados = filtrados.filter(
+        (dh) =>
+          dh.dia.toLowerCase().includes(termino) ||
+          dh.hora_inicio.toLowerCase().includes(termino) ||
+          dh.hora_fin.toLowerCase().includes(termino)
       );
     }
-    this.diasHorariosFiltrados = diasHorariosFiltrados;
+    this.diasHorariosFiltrados = filtrados;
     this.first = 0;
   }
 
@@ -222,39 +172,33 @@ export class HorarioDiaComponent {
   }
 
   openNew() {
-    this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
-    this.selectedDia = null;
-    this.selectedHorario = null;
+    this.diaHorarioActual = { ...DIA_HORARIO_VACIO };
     this.submitted = false;
     this.isEdit = false;
     this.diaHorarioDialog = true;
   }
 
-  editDiaHorario(diaHorarioTable: DiaHorarioTable) {
-    const api = this.diasHorarios.find((d) => d.id === diaHorarioTable.id);
-    if (api) {
-      this.diaHorarioActual = { ...api };
-      this.selectedDia = api.dia;
-      this.selectedHorario = api.horario;
-    }
+  editDiaHorario(dh: DiaHorarioTable) {
+    this.diaHorarioActual = { ...dh };
     this.isEdit = true;
     this.diaHorarioDialog = true;
   }
 
-  deleteDiaHorario(diaHorarioTable: DiaHorarioTable) {
+  deleteDiaHorario(dh: DiaHorarioTable) {
     this.confirmationService.confirm({
-      message: `¿Seguro que deseas eliminar el horario del día "${diaHorarioTable.dia_nombre}"?`,
+      message: `¿Seguro que deseas eliminar el día-horario "${dh.dia} ${dh.hora_inicio} - ${dh.hora_fin}"?`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.horariosService.deleteDiaHorario(diaHorarioTable.id).subscribe({
+        this.horariosService.deleteDiaHorario(dh.id).subscribe({
           next: () => {
-            this.obtenerDiasHorarios();
+            this.diasHorarios = this.diasHorarios.filter((d) => d.id !== dh.id);
+            this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Eliminado',
-              detail: 'Horario eliminado correctamente',
+              detail: 'Día-Horario eliminado correctamente',
               life: 3000,
             });
           },
@@ -262,7 +206,7 @@ export class HorarioDiaComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo eliminar el horario',
+              detail: 'No se pudo eliminar el día-horario',
               life: 3000,
             });
           },
@@ -278,54 +222,56 @@ export class HorarioDiaComponent {
 
   saveDiaHorario() {
     this.submitted = true;
-    if (this.selectedDia && this.selectedHorario) {
-      const payload: DiaHorarioAPI = {
-        id: this.diaHorarioActual.id,
-        dia: this.selectedDia,
-        horario: this.selectedHorario,
-      };
+    if (
+      this.diaHorarioActual.dia &&
+      this.diaHorarioActual.hora_inicio &&
+      this.diaHorarioActual.hora_fin
+    ) {
       if (this.isEdit && this.diaHorarioActual.id) {
         this.horariosService
-          .updateDiaHorario(this.diaHorarioActual.id, payload)
+          .updateDiaHorario(this.diaHorarioActual.id, this.diaHorarioActual)
           .subscribe({
-            next: () => {
-              this.obtenerDiasHorarios();
+            next: (dh) => {
+              const idx = this.diasHorarios.findIndex((d) => d.id === dh.id);
+              if (idx > -1) this.diasHorarios[idx] = dh;
+              this.aplicarFiltros();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Actualizado',
-                detail: 'Horario actualizado correctamente',
+                detail: 'Día-Horario actualizado correctamente',
                 life: 3000,
               });
               this.diaHorarioDialog = false;
-              this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
+              this.diaHorarioActual = { ...DIA_HORARIO_VACIO };
             },
             error: () => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'No se pudo actualizar el horario',
+                detail: 'No se pudo actualizar el día-horario',
                 life: 3000,
               });
             },
           });
       } else {
-        this.horariosService.createDiaHorario(payload).subscribe({
-          next: () => {
-            this.obtenerDiasHorarios();
+        this.horariosService.createDiaHorario(this.diaHorarioActual).subscribe({
+          next: (dh) => {
+            this.diasHorarios.push(dh);
+            this.aplicarFiltros();
             this.messageService.add({
               severity: 'success',
               summary: 'Registrado',
-              detail: 'Horario creado correctamente',
+              detail: 'Día-Horario creado correctamente',
               life: 3000,
             });
             this.diaHorarioDialog = false;
-            this.diaHorarioActual = { id: 0, dia: 0, horario: 0 };
+            this.diaHorarioActual = { ...DIA_HORARIO_VACIO };
           },
           error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'No se pudo crear el horario',
+              detail: 'No se pudo crear el día-horario',
               life: 3000,
             });
           },

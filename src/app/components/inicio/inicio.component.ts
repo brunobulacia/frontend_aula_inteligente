@@ -12,6 +12,7 @@ import {
   Hand,
   ChartNoAxesCombined,
   ListChecks,
+  ContactRound,
 } from 'lucide-angular';
 import { AuthService } from '../../services/auth/auth.service';
 import { AvatarModule } from 'primeng/avatar';
@@ -42,6 +43,7 @@ export class InicioComponent implements OnInit {
   readonly HandIcon = Hand;
   readonly ChartNoAxesCombinedIcon = ChartNoAxesCombined;
   readonly ListChecksIcon = ListChecks;
+  readonly ContactRoundIcon = ContactRound;
   currentUser: any = null;
   openAlumno = false;
   openProfesor = false;

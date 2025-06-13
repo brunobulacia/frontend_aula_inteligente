@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UsuarioService } from '../../../../services/usuarios/usuarios.service';
+import { UsuarioService } from '../../../services/usuarios/usuarios.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Usuario } from '../../../../interfaces/usuario';
+import { Usuario } from '../../../interfaces/usuario';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
@@ -32,8 +32,8 @@ import {
   Filter,
   X,
 } from 'lucide-angular';
-import { Registro } from '../../../../interfaces/registro';
-import { AuthService } from '../../../../services/auth/auth.service';
+import { Registro } from '../../../interfaces/registro';
+import { AuthService } from '../../../services/auth/auth.service';
 const USUARIO_VACIO: Usuario = {
   id: 0,
   nombre: '',

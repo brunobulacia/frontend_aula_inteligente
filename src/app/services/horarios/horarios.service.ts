@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
-import { Horarios, DiaHorarioAPI, DIAS } from '../../interfaces/horarios';
+import {
+  Horarios,
+  DiaHorarioAPI,
+  DIAS,
+  DiaHorarioTable,
+} from '../../interfaces/horarios';
 
 @Injectable({
   providedIn: 'root',
@@ -69,8 +74,8 @@ export class HorariosService {
   }
 
   //CRUD PARA EL INTERFACE DE DiaHorario
-  getDiasHorarios(): Observable<DiaHorarioAPI[]> {
-    return this.http.get<DiaHorarioAPI[]>(
+  getDiasHorarios(): Observable<DiaHorarioTable[]> {
+    return this.http.get<DiaHorarioTable[]>(
       `${environment.api}materias/dia-horarios/`,
       {
         headers: {
@@ -80,8 +85,8 @@ export class HorariosService {
     );
   }
 
-  getDiaHorario(id: number): Observable<DiaHorarioAPI> {
-    return this.http.get<DiaHorarioAPI>(
+  getDiaHorario(id: number): Observable<DiaHorarioTable> {
+    return this.http.get<DiaHorarioTable>(
       `${environment.api}materias/dia-horarios/${id}/`,
       {
         headers: {
@@ -91,8 +96,8 @@ export class HorariosService {
     );
   }
 
-  createDiaHorario(diaHorario: DiaHorarioAPI): Observable<DiaHorarioAPI> {
-    return this.http.post<DiaHorarioAPI>(
+  createDiaHorario(diaHorario: DiaHorarioTable): Observable<DiaHorarioTable> {
+    return this.http.post<DiaHorarioTable>(
       `${environment.api}materias/dia-horarios/`,
       diaHorario,
       {
@@ -105,9 +110,9 @@ export class HorariosService {
 
   updateDiaHorario(
     id: number,
-    diaHorario: DiaHorarioAPI
-  ): Observable<DiaHorarioAPI> {
-    return this.http.put<DiaHorarioAPI>(
+    diaHorario: DiaHorarioTable
+  ): Observable<DiaHorarioTable> {
+    return this.http.put<DiaHorarioTable>(
       `${environment.api}materias/dia-horarios/${id}/`,
       diaHorario,
       {
