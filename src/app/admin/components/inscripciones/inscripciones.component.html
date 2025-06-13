@@ -1,25 +1,27 @@
-<div class="p-4 bg-slate-800 min-h-screen text-white">
+<div class="p-4 bg-blue-50 min-h-screen text-gray-800">
   <p-toast></p-toast>
 
-  <p-card styleClass="bg-slate-700 text-white border-0 shadow-lg">
+  <p-card styleClass="bg-white text-gray-800 border-0 shadow-lg mb-6">
     <ng-template pTemplate="header">
-      <div class="bg-slate-800 p-4 rounded-t-lg">
-        <div class="flex items-center justify-center gap-2">
-          <i-lucide [img]="SchoolIcon" class="w-6 h-6 text-blue-300"></i-lucide>
-          <h1 class="text-2xl font-bold text-center">Inscripción de Alumnos</h1>
+      <div class="bg-blue-100 p-5 rounded-t-lg border-b border-blue-200">
+        <div class="flex items-center justify-center gap-3">
+          <i-lucide [img]="SchoolIcon" class="w-7 h-7 text-blue-600"></i-lucide>
+          <h1 class="text-2xl font-bold text-center text-blue-800">
+            Inscripción de Alumnos
+          </h1>
         </div>
       </div>
     </ng-template>
 
-    <div class="p-fluid">
+    <div class="p-fluid p-4">
       <form (ngSubmit)="enviarInscripcion()" class="space-y-6">
         <!-- Selección de Alumno -->
-        <div class="mb-4">
+        <div class="mb-5 bg-blue-50 p-4 rounded-lg shadow-sm">
           <label
             for="alumno"
-            class="block mb-2 font-medium flex items-center gap-2"
+            class="block mb-3 font-medium flex items-center gap-2 text-lg text-blue-800"
           >
-            <i-lucide [img]="UserIcon" class="w-5 h-5 text-blue-300"></i-lucide>
+            <i-lucide [img]="UserIcon" class="w-5 h-5 text-blue-600"></i-lucide>
             Seleccionar Alumno
           </label>
           <p-dropdown
@@ -31,7 +33,7 @@
             name="alumno_id"
             placeholder="Seleccione un alumno"
             styleClass="w-full"
-            [style]="{ 'background-color': 'rgb(71, 85, 105)', color: 'white' }"
+            [style]="{ 'background-color': '#f0f9ff', color: '#1e40af' }"
             [filter]="true"
             filterBy="nombre,apellidos"
             [showClear]="true"
@@ -44,7 +46,7 @@
               >
                 <i-lucide
                   [img]="UserIcon"
-                  class="w-4 h-4 text-blue-300"
+                  class="w-4 h-4 text-blue-600"
                 ></i-lucide>
                 {{ getNombreCompletoAlumno(inscripcion.alumno_id) }}
               </div>
@@ -53,7 +55,7 @@
               <div class="flex items-center gap-2">
                 <i-lucide
                   [img]="UserIcon"
-                  class="w-4 h-4 text-blue-300"
+                  class="w-4 h-4 text-blue-600"
                 ></i-lucide>
                 {{ usuario.nombre }} {{ usuario.apellidos }}
               </div>
@@ -61,30 +63,34 @@
           </p-dropdown>
         </div>
 
-        <p-divider>
-          <div class="flex items-center gap-2">
+        <p-divider styleClass="my-5">
+          <div
+            class="flex items-center gap-2 px-3 py-1 bg-blue-100 rounded-full"
+          >
             <i-lucide
               [img]="BookOpenIcon"
-              class="w-4 h-4 text-blue-300"
+              class="w-5 h-5 text-blue-600"
             ></i-lucide>
-            <span>Materias</span>
+            <span class="font-medium text-blue-800">Materias</span>
           </div>
         </p-divider>
 
         <!-- Sección de Materias -->
-        <div class="mb-4">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="text-xl font-semibold flex items-center gap-2">
+        <div class="mb-5">
+          <div class="flex justify-between items-center mb-4">
+            <h2
+              class="text-xl font-semibold flex items-center gap-2 text-blue-800"
+            >
               <i-lucide
                 [img]="BookOpenIcon"
-                class="w-5 h-5 text-blue-300"
+                class="w-5 h-5 text-blue-600"
               ></i-lucide>
               Materias a Inscribir
             </h2>
             <p-button
               label="Agregar Materia"
               (onClick)="agregarMateria()"
-              styleClass="p-button-sm bg-slate-600 border-slate-500"
+              styleClass="p-button-sm bg-blue-600 hover:bg-blue-700 border-blue-500"
             >
               <ng-template pTemplate="icon">
                 <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
@@ -95,28 +101,30 @@
           <!-- Lista de Materias -->
           <div
             *ngIf="materiasSeleccionadas.length === 0"
-            class="text-center py-4 bg-slate-600 rounded-lg flex flex-col items-center justify-center gap-2"
+            class="text-center py-8 bg-blue-50 rounded-lg flex flex-col items-center justify-center gap-3 border border-dashed border-blue-300"
           >
             <i-lucide
               [img]="BookOpenIcon"
-              class="w-8 h-8 text-blue-300 opacity-70"
+              class="w-10 h-10 text-blue-400 opacity-70"
             ></i-lucide>
-            <p>No hay materias seleccionadas. Agregue al menos una materia.</p>
+            <p class="text-blue-700">
+              No hay materias seleccionadas. Agregue al menos una materia.
+            </p>
           </div>
 
           <div
             *ngFor="let materia of materiasSeleccionadas; let i = index"
-            class="p-3 mb-3 bg-slate-600 rounded-lg"
+            class="p-4 mb-4 bg-white rounded-lg shadow-md border-l-4 border-blue-500 transition-all hover:shadow-lg"
           >
-            <div class="flex flex-col md:flex-row gap-3">
+            <div class="flex flex-col md:flex-row gap-4">
               <div class="flex-1">
                 <label
                   [for]="'materia_' + i"
-                  class="block mb-2 font-medium flex items-center gap-2"
+                  class="block mb-2 font-medium flex items-center gap-2 text-blue-800"
                 >
                   <i-lucide
                     [img]="BookOpenIcon"
-                    class="w-4 h-4 text-blue-300"
+                    class="w-4 h-4 text-blue-600"
                   ></i-lucide>
                   Materia
                 </label>
@@ -130,8 +138,8 @@
                   placeholder="Seleccione una materia"
                   styleClass="w-full"
                   [style]="{
-                    'background-color': 'rgb(71, 85, 105)',
-                    color: 'white'
+                    'background-color': '#f0f9ff',
+                    color: '#1e40af'
                   }"
                   [filter]="true"
                   filterBy="nombre"
@@ -144,7 +152,7 @@
                     >
                       <i-lucide
                         [img]="BookOpenIcon"
-                        class="w-4 h-4 text-blue-300"
+                        class="w-4 h-4 text-blue-600"
                       ></i-lucide>
                       {{ getNombreMateria(materia.materia_id) }}
                     </div>
@@ -153,7 +161,7 @@
                     <div class="flex items-center gap-2">
                       <i-lucide
                         [img]="BookOpenIcon"
-                        class="w-4 h-4 text-blue-300"
+                        class="w-4 h-4 text-blue-600"
                       ></i-lucide>
                       {{ mat.nombre }}
                     </div>
@@ -164,11 +172,11 @@
               <div class="flex-1">
                 <label
                   [for]="'gestion_' + i"
-                  class="block mb-2 font-medium flex items-center gap-2"
+                  class="block mb-2 font-medium flex items-center gap-2 text-blue-800"
                 >
                   <i-lucide
                     [img]="CalendarClockIcon"
-                    class="w-4 h-4 text-blue-300"
+                    class="w-4 h-4 text-blue-600"
                   ></i-lucide>
                   Gestión/Curso
                 </label>
@@ -182,8 +190,8 @@
                   placeholder="Seleccione una gestión"
                   styleClass="w-full"
                   [style]="{
-                    'background-color': 'rgb(71, 85, 105)',
-                    color: 'white'
+                    'background-color': '#f0f9ff',
+                    color: '#1e40af'
                   }"
                   [filter]="true"
                   filterBy="curso_nombre,gestion_periodo"
@@ -196,7 +204,7 @@
                     >
                       <i-lucide
                         [img]="CalendarClockIcon"
-                        class="w-4 h-4 text-blue-300"
+                        class="w-4 h-4 text-blue-600"
                       ></i-lucide>
                       {{ getNombreGestion(materia.gestion_curso_id) }}
                     </div>
@@ -205,7 +213,7 @@
                     <div class="flex items-center gap-2">
                       <i-lucide
                         [img]="CalendarClockIcon"
-                        class="w-4 h-4 text-blue-300"
+                        class="w-4 h-4 text-blue-600"
                       ></i-lucide>
                       {{ gestion.curso_nombre }} - {{ gestion.gestion_periodo }}
                     </div>
@@ -216,7 +224,7 @@
               <div class="flex items-end">
                 <button
                   type="button"
-                  class="p-2 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
+                  class="p-2 bg-red-500 hover:bg-red-600 rounded-full transition-colors shadow-md hover:shadow-lg text-white"
                   (click)="eliminarMateria(i)"
                 >
                   <i-lucide [img]="TrashIcon" class="w-5 h-5"></i-lucide>
@@ -226,7 +234,7 @@
           </div>
         </div>
 
-        <div class="flex justify-end gap-2 pt-3">
+        <div class="flex justify-end gap-3 pt-4 border-t border-blue-200">
           <p-button
             type="button"
             label="Limpiar"
@@ -242,7 +250,7 @@
             type="submit"
             label="Guardar Inscripción"
             [loading]="submitting"
-            styleClass="bg-slate-600 border-slate-500"
+            styleClass="bg-blue-600 hover:bg-blue-700 border-blue-500"
           >
             <ng-template pTemplate="icon">
               <i-lucide [img]="SaveIcon" class="w-4 h-4 mr-2"></i-lucide>

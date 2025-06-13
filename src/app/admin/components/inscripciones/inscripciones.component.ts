@@ -58,31 +58,72 @@ import {
   templateUrl: './inscripciones.component.html',
   styles: `
     :host ::ng-deep .p-dropdown {
-      background-color: rgb(71, 85, 105);
-      border-color: rgb(51, 65, 85);
+      background-color: #f0f9ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
     }
     
     :host ::ng-deep .p-dropdown-panel {
-      background-color: rgb(71, 85, 105);
-      border-color: rgb(51, 65, 85);
+      background-color: #f0f9ff;
+      border-color: #bfdbfe;
     }
     
     :host ::ng-deep .p-dropdown-item {
-      color: white;
+      color: #1e40af;
     }
     
     :host ::ng-deep .p-dropdown-item:hover {
-      background-color: rgb(51, 65, 85);
+      background-color: #dbeafe;
     }
     
     :host ::ng-deep .p-dropdown-filter {
-      background-color: rgb(71, 85, 105);
-      border-color: rgb(51, 65, 85);
-      color: white;
+      background-color: #f0f9ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
     }
     
     :host ::ng-deep .p-dropdown-filter::placeholder {
-      color: rgb(203, 213, 225);
+      color: #60a5fa;
+    }
+    
+    :host ::ng-deep .p-card {
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    :host ::ng-deep .p-card .p-card-content {
+      padding: 0;
+    }
+    
+    :host ::ng-deep .p-divider .p-divider-content {
+      background-color: transparent;
+    }
+    
+    :host ::ng-deep .p-button.p-button-sm {
+      padding: 0.4rem 0.75rem;
+    }
+    
+    :host ::ng-deep .p-dropdown-items-wrapper::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    :host ::ng-deep .p-dropdown-items-wrapper::-webkit-scrollbar-thumb {
+      background-color: #93c5fd;
+      border-radius: 4px;
+    }
+    
+    :host ::ng-deep .p-dropdown-items-wrapper::-webkit-scrollbar-track {
+      background-color: #e0f2fe;
+    }
+    
+    :host ::ng-deep .p-button.p-button-outlined.p-button-secondary {
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+    
+    :host ::ng-deep .p-button.p-button-outlined.p-button-secondary:hover {
+      background: #f1f5f9;
+      color: #334155;
     }
   `,
 })
