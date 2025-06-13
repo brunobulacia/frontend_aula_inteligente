@@ -41,3 +41,15 @@ export interface Calificar {
   hacer: number;
   decidir: number;
 }
+
+export interface verParticipaciones {
+  alumno: string;
+  fecha: string;
+  descripcion: string;
+}
+
+export interface verAsistencias {
+  alumno: string;
+  fecha: string;
+  asistio: boolean;
+}

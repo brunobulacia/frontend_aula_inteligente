@@ -182,7 +182,40 @@
               label="Ver Alumnos"
               icon="pi pi-eye"
               class="w-full mt-2"
-              [routerLink]="['/inicio/profesor/alumnos', materia.id]"
+              [routerLink]="[
+                '/inicio/profesor/alumnos',
+                materia.id,
+                materia.gestion_curso,
+                materia.materia
+              ]"
+            ></button>
+          </div>
+          <div>
+            <button
+              pButton
+              label="Ver Asistencias"
+              icon="pi pi-eye"
+              class="w-full mt-2"
+              [routerLink]="[
+                '/inicio/profesor/asistencias',
+                materia.id,
+                materia.gestion_curso,
+                materia.materia
+              ]"
+            ></button>
+          </div>
+          <div>
+            <button
+              pButton
+              label="Ver Participaciones"
+              icon="pi pi-eye"
+              class="w-full mt-2"
+              [routerLink]="[
+                '/inicio/profesor/participaciones',
+                materia.id,
+                materia.gestion_curso,
+                materia.materia
+              ]"
             ></button>
           </div>
         </div>

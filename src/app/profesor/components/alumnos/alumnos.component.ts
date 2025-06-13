@@ -30,6 +30,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
+import { Calificar } from '../../../interfaces/profesorMaterias';
+
 interface GradeForm {
   ser: number | null;
   saber: number | null;
@@ -145,8 +147,24 @@ export class AlumnosComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
+  calificacion: Calificar = {
+    alumno_id: this.selectedStudent?.id || 0,
+    materia_id: 0,
+    gestion_curso: 0,
+    ser: 0,
+    saber: 0,
+    hacer: 0,
+    decidir: 0,
+  };
+
   ngOnInit(): void {
     this.materiaId = Number(this.route.snapshot.paramMap.get('id'));
+    this.calificacion.gestion_curso = Number(
+      this.route.snapshot.paramMap.get('gestion_curso')
+    );
+    this.calificacion.materia_id = Number(
+      this.route.snapshot.paramMap.get('materia_id')
+    );
     this.loadAlumnos();
   }
 
@@ -233,21 +251,41 @@ export class AlumnosComponent implements OnInit {
 
     this.submittingGrades = true;
 
-    // Simulate API call
-    setTimeout(() => {
+    if (!this.selectedStudent) {
       this.submittingGrades = false;
-      this.displayGradeDialog = false;
+      return;
+    }
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Calificaciones guardadas',
-        detail: `Las calificaciones para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} han sido guardadas exitosamente`,
-      });
+    const calificacion: Calificar = {
+      alumno_id: this.selectedStudent.id,
+      materia_id: this.calificacion.materia_id,
+      gestion_curso: this.calificacion.gestion_curso,
+      ser: this.gradeForm.ser ?? 0,
+      saber: this.gradeForm.saber ?? 0,
+      hacer: this.gradeForm.hacer ?? 0,
+      decidir: this.gradeForm.decidir ?? 0,
+    };
 
-      // Here you would normally call your API service to save the grades
-      console.log('Grades submitted for student:', this.selectedStudent?.id);
-      console.log('Grades:', this.gradeForm);
-    }, 1000);
+    this.profesorService.calificarAlumno(calificacion).subscribe({
+      next: () => {
+        this.submittingGrades = false;
+        this.displayGradeDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Calificación registrada',
+          detail: `La calificación para ${this.selectedStudent?.nombre} ${this.selectedStudent?.apellidos} ha sido registrada exitosamente`,
+        });
+      },
+      error: (err) => {
+        this.submittingGrades = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo registrar la calificación',
+        });
+        console.error('Error al calificar:', err);
+      },
+    });
   }
 
   isGradeFormValid(): boolean {

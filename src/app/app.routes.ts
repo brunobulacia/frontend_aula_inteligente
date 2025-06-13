@@ -48,15 +48,15 @@ export const routes: Routes = [
             component: MateriasProfComponent,
           },
           {
-            path: 'alumnos/:id',
+            path: 'alumnos/:id/:gestion_curso/:materia_id',
             component: AlumnosComponent,
           },
           {
-            path: 'asistencias',
+            path: 'asistencias/:id/:gestion_curso/:materia_id',
             component: AsistenciasProfComponent,
           },
           {
-            path: 'participaciones',
+            path: 'participaciones/:id/:gestion_curso/:materia_id',
             component: ParticipacionesProfComponent,
           },
         ],
