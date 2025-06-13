@@ -20,7 +20,6 @@ import { GestionesComponent } from './admin/components/gestiones/gestiones.compo
 import { GestionCursoComponent } from './admin/components/gestion-curso/gestion-curso.component';
 import { HorarioDiaComponent } from './admin/components/horario-dia/horario-dia.component';
 import { AsignacionesComponent } from './admin/components/asignaciones/asignaciones.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MateriasProfComponent } from './profesor/components/materias/materias.component';
 import { AsistenciasProfComponent } from './profesor/components/asistencias/asistencias.component';
 import { ParticipacionesProfComponent } from './profesor/components/participaciones/participaciones.component';
@@ -61,10 +60,6 @@ export const routes: Routes = [
             component: ParticipacionesProfComponent,
           },
         ],
-      },
-      {
-        path: 'dashboard',
-        component: DashboardComponent,
       },
     ],
   },

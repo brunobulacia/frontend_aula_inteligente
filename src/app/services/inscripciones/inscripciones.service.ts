@@ -12,11 +12,14 @@ export class InscripcionesService {
   token = localStorage.getItem('token');
 
   inscribirAlumno(payload: InscripcionAPI): Observable<InscripcionAPI> {
-    const headers = { Authorization: `Token ${this.token}` };
     return this.http.post<InscripcionAPI>(
       `${environment.api}alumnos/fichas/inscribir-alumno/`,
       payload,
-      { headers }
+      {
+        headers: {
+          Authorization: `Token ${this.token}`,
+        },
+      }
     );
   }
 }

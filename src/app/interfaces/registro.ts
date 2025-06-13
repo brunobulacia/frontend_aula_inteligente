@@ -4,6 +4,7 @@ export interface Registro {
   email: string;
   password: string;
   tipo_usuario: string;
+  ci: string;
   direccion: {
     ciudad: string;
     zona: string;

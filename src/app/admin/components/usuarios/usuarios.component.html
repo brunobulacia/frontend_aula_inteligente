@@ -437,6 +437,32 @@
               </small>
             </div>
 
+            <!-- Campo CI -->
+            <div>
+              <label
+                for="ci"
+                class="block text-sm font-medium text-slate-200 mb-2"
+              >
+                CI *
+              </label>
+              <input
+                id="ci"
+                type="text"
+                pInputText
+                [(ngModel)]="usuarioActual.ci"
+                name="ci"
+                required
+                class="w-full"
+                placeholder="Ingrese el CI"
+              />
+              <small
+                class="text-red-400 mt-1 block"
+                *ngIf="submitted && !usuarioActual.ci"
+              >
+                El CI es requerido.
+              </small>
+            </div>
+
             <div>
               <label
                 for="tipo_usuario"

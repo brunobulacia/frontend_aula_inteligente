@@ -41,6 +41,7 @@ const USUARIO_VACIO: Usuario = {
   email: '',
   password: '',
   tipo_usuario: '',
+  ci: '',
   direccion: {
     id: 0,
     ciudad: '',
@@ -102,6 +103,7 @@ export class UsuariosComponent {
     nombre: '',
     apellidos: '',
     email: '',
+    ci: '',
     password: '',
     tipo_usuario: '',
     direccion: {
@@ -346,6 +348,7 @@ export class UsuariosComponent {
           email: this.usuarioActual.email,
           password: this.usuarioActual.password,
           tipo_usuario: this.usuarioActual.tipo_usuario,
+          ci: this.usuarioActual.ci,
           direccion: {
             ciudad: this.usuarioActual.direccion.ciudad,
             zona: this.usuarioActual.direccion.zona,

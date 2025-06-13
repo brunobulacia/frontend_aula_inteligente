@@ -1,1 +1,255 @@
-<p>inscripciones works!</p>
+<div class="p-4 bg-slate-800 min-h-screen text-white">
+  <p-toast></p-toast>
+
+  <p-card styleClass="bg-slate-700 text-white border-0 shadow-lg">
+    <ng-template pTemplate="header">
+      <div class="bg-slate-800 p-4 rounded-t-lg">
+        <div class="flex items-center justify-center gap-2">
+          <i-lucide [img]="SchoolIcon" class="w-6 h-6 text-blue-300"></i-lucide>
+          <h1 class="text-2xl font-bold text-center">Inscripción de Alumnos</h1>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="p-fluid">
+      <form (ngSubmit)="enviarInscripcion()" class="space-y-6">
+        <!-- Selección de Alumno -->
+        <div class="mb-4">
+          <label
+            for="alumno"
+            class="block mb-2 font-medium flex items-center gap-2"
+          >
+            <i-lucide [img]="UserIcon" class="w-5 h-5 text-blue-300"></i-lucide>
+            Seleccionar Alumno
+          </label>
+          <p-dropdown
+            id="alumno"
+            [options]="usuarios"
+            [(ngModel)]="inscripcion.alumno_id"
+            optionLabel="nombre"
+            optionValue="id"
+            name="alumno_id"
+            placeholder="Seleccione un alumno"
+            styleClass="w-full"
+            [style]="{ 'background-color': 'rgb(71, 85, 105)', color: 'white' }"
+            [filter]="true"
+            filterBy="nombre,apellidos"
+            [showClear]="true"
+            required
+          >
+            <ng-template pTemplate="selectedItem">
+              <div
+                *ngIf="inscripcion.alumno_id"
+                class="flex items-center gap-2"
+              >
+                <i-lucide
+                  [img]="UserIcon"
+                  class="w-4 h-4 text-blue-300"
+                ></i-lucide>
+                {{ getNombreCompletoAlumno(inscripcion.alumno_id) }}
+              </div>
+            </ng-template>
+            <ng-template let-usuario pTemplate="item">
+              <div class="flex items-center gap-2">
+                <i-lucide
+                  [img]="UserIcon"
+                  class="w-4 h-4 text-blue-300"
+                ></i-lucide>
+                {{ usuario.nombre }} {{ usuario.apellidos }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+
+        <p-divider>
+          <div class="flex items-center gap-2">
+            <i-lucide
+              [img]="BookOpenIcon"
+              class="w-4 h-4 text-blue-300"
+            ></i-lucide>
+            <span>Materias</span>
+          </div>
+        </p-divider>
+
+        <!-- Sección de Materias -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-xl font-semibold flex items-center gap-2">
+              <i-lucide
+                [img]="BookOpenIcon"
+                class="w-5 h-5 text-blue-300"
+              ></i-lucide>
+              Materias a Inscribir
+            </h2>
+            <p-button
+              label="Agregar Materia"
+              (onClick)="agregarMateria()"
+              styleClass="p-button-sm bg-slate-600 border-slate-500"
+            >
+              <ng-template pTemplate="icon">
+                <i-lucide [img]="PlusIcon" class="w-4 h-4 mr-2"></i-lucide>
+              </ng-template>
+            </p-button>
+          </div>
+
+          <!-- Lista de Materias -->
+          <div
+            *ngIf="materiasSeleccionadas.length === 0"
+            class="text-center py-4 bg-slate-600 rounded-lg flex flex-col items-center justify-center gap-2"
+          >
+            <i-lucide
+              [img]="BookOpenIcon"
+              class="w-8 h-8 text-blue-300 opacity-70"
+            ></i-lucide>
+            <p>No hay materias seleccionadas. Agregue al menos una materia.</p>
+          </div>
+
+          <div
+            *ngFor="let materia of materiasSeleccionadas; let i = index"
+            class="p-3 mb-3 bg-slate-600 rounded-lg"
+          >
+            <div class="flex flex-col md:flex-row gap-3">
+              <div class="flex-1">
+                <label
+                  [for]="'materia_' + i"
+                  class="block mb-2 font-medium flex items-center gap-2"
+                >
+                  <i-lucide
+                    [img]="BookOpenIcon"
+                    class="w-4 h-4 text-blue-300"
+                  ></i-lucide>
+                  Materia
+                </label>
+                <p-dropdown
+                  [id]="'materia_' + i"
+                  [options]="materias"
+                  [(ngModel)]="materia.materia_id"
+                  optionLabel="nombre"
+                  optionValue="id"
+                  [name]="'materia_id_' + i"
+                  placeholder="Seleccione una materia"
+                  styleClass="w-full"
+                  [style]="{
+                    'background-color': 'rgb(71, 85, 105)',
+                    color: 'white'
+                  }"
+                  [filter]="true"
+                  filterBy="nombre"
+                  required
+                >
+                  <ng-template pTemplate="selectedItem">
+                    <div
+                      *ngIf="materia.materia_id"
+                      class="flex items-center gap-2"
+                    >
+                      <i-lucide
+                        [img]="BookOpenIcon"
+                        class="w-4 h-4 text-blue-300"
+                      ></i-lucide>
+                      {{ getNombreMateria(materia.materia_id) }}
+                    </div>
+                  </ng-template>
+                  <ng-template let-mat pTemplate="item">
+                    <div class="flex items-center gap-2">
+                      <i-lucide
+                        [img]="BookOpenIcon"
+                        class="w-4 h-4 text-blue-300"
+                      ></i-lucide>
+                      {{ mat.nombre }}
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+
+              <div class="flex-1">
+                <label
+                  [for]="'gestion_' + i"
+                  class="block mb-2 font-medium flex items-center gap-2"
+                >
+                  <i-lucide
+                    [img]="CalendarClockIcon"
+                    class="w-4 h-4 text-blue-300"
+                  ></i-lucide>
+                  Gestión/Curso
+                </label>
+                <p-dropdown
+                  [id]="'gestion_' + i"
+                  [options]="gestionesCurso"
+                  [(ngModel)]="materia.gestion_curso_id"
+                  [optionLabel]="'curso_nombre'"
+                  optionValue="id"
+                  [name]="'gestion_curso_id_' + i"
+                  placeholder="Seleccione una gestión"
+                  styleClass="w-full"
+                  [style]="{
+                    'background-color': 'rgb(71, 85, 105)',
+                    color: 'white'
+                  }"
+                  [filter]="true"
+                  filterBy="curso_nombre,gestion_periodo"
+                  required
+                >
+                  <ng-template pTemplate="selectedItem">
+                    <div
+                      *ngIf="materia.gestion_curso_id"
+                      class="flex items-center gap-2"
+                    >
+                      <i-lucide
+                        [img]="CalendarClockIcon"
+                        class="w-4 h-4 text-blue-300"
+                      ></i-lucide>
+                      {{ getNombreGestion(materia.gestion_curso_id) }}
+                    </div>
+                  </ng-template>
+                  <ng-template let-gestion pTemplate="item">
+                    <div class="flex items-center gap-2">
+                      <i-lucide
+                        [img]="CalendarClockIcon"
+                        class="w-4 h-4 text-blue-300"
+                      ></i-lucide>
+                      {{ gestion.curso_nombre }} - {{ gestion.gestion_periodo }}
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+
+              <div class="flex items-end">
+                <button
+                  type="button"
+                  class="p-2 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
+                  (click)="eliminarMateria(i)"
+                >
+                  <i-lucide [img]="TrashIcon" class="w-5 h-5"></i-lucide>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3">
+          <p-button
+            type="button"
+            label="Limpiar"
+            (onClick)="limpiarFormulario()"
+            styleClass="p-button-outlined p-button-secondary"
+            [disabled]="submitting"
+          >
+            <ng-template pTemplate="icon">
+              <i-lucide [img]="XIcon" class="w-4 h-4 mr-2"></i-lucide>
+            </ng-template>
+          </p-button>
+          <p-button
+            type="submit"
+            label="Guardar Inscripción"
+            [loading]="submitting"
+            styleClass="bg-slate-600 border-slate-500"
+          >
+            <ng-template pTemplate="icon">
+              <i-lucide [img]="SaveIcon" class="w-4 h-4 mr-2"></i-lucide>
+            </ng-template>
+          </p-button>
+        </div>
+      </form>
+    </div>
+  </p-card>
+</div>

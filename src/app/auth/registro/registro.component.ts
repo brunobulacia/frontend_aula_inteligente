@@ -32,6 +32,7 @@ export class RegistroComponent {
         Validators.required,
         Validators.minLength(6),
       ]),
+      ci: new FormControl('', Validators.required), // 👈 si no se usa, puedes omitirlo
       tipo_usuario: new FormControl('', Validators.required),
       ciudad: new FormControl('', Validators.required),
       zona: new FormControl('', Validators.required),
@@ -56,6 +57,11 @@ export class RegistroComponent {
   get tipo_usuario() {
     return this.formulario.get('tipo_usuario')!;
   }
+
+  get ci() {
+    return this.formulario.get('ci')!;
+  }
+
   get ciudad() {
     return this.formulario.get('ciudad')!;
   }
@@ -86,6 +92,7 @@ export class RegistroComponent {
       apellidos: this.formulario.value.apellidos,
       email: this.formulario.value.email,
       password: this.formulario.value.password,
+      ci: this.formulario.value.ci || '', // 👈 si no se usa, puedes omitirlo
       tipo_usuario: this.formulario.value.tipo_usuario, // 👈 así está bien
       direccion: {
         ciudad: this.formulario.value.ciudad,
